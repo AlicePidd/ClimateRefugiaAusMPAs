@@ -1,20 +1,21 @@
-# Step 9: Source background data
+# Background data
   # Written by Alice Pidd (alicempidd@gmail.com)
-    # May 2023, re-written August 2023
+    # June 2023
+
+
 
 # Source the helpers and necessary bits -----------------------------------------------------------
 
-  source("HelpersD.R")
-  # source_disk <- "/Volumes/Alice_Dock_1"
+  source("Helpers.R")
   source_disk <- "/Volumes/AliceShield/clim_data"
   
 
 # Source data and shapefiles  --------------------------------------------------
+  
 ## Create a spatraster with the correct extent and resolution ----
   
-  # e1 <- ext(100, 170, -50, -5)
-  e1 <- ext(105, 175, -50, -5) # NEW EXTENT WITHOUT COCOS KEELING/XMAS ISLAND
-  base_r <- rast(ext = e1, res = 0.25) # Same resolution as what we regridded original files to in script #1
+  e1 <- ext(105, 175, -50, -5) # Extent
+  base_r <- rast(ext = e1, res = 0.25) # Base raster for resampling and cropping
 
   
 ## Get a shapefile of the World and crop to Australia ----
@@ -26,7 +27,7 @@
   bbox_e1 <- st_as_sfc(st_bbox(c(xmin = 108, xmax = 175, ymin = -50, ymax = -5), crs = st_crs(oceaniaAsia)))
   oceaniaAsia <- st_crop(oceaniaAsia, bbox_e1)
   saveRDS(oceaniaAsia, "/Volumes/AliceShield/clim_data/masks/landsea_masks/oceaniaAsia_shapefile.RDS")
-  plot(oceaniaAsia)
+  # plot(oceaniaAsia)
 
   oceaniaAsiaAnt <- World %>%
     filter(continent %in% c("Oceania", "Asia", "Antarctica")) %>%
