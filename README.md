@@ -33,3 +33,12 @@ In addition to data preparation scripts relevant to the case study region (conti
 > Marine heatwave cumulative intensity
 
 > Identifying climate refugia based on prescribed thresholds of climate exposure
+
+## Machine specifications
+
+All analyses were run on a machine with the following specifications:
+
+```         
+
+R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
+```
