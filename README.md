@@ -33,15 +33,6 @@ Earth System Model (ESM) outputs used in this study and the associated code were
 
 In addition to data preparation scripts relevant to the case study region (continental Australia), this repo includes general code for computing and plotting the following metrics of marine climate exposure:
 
-> Rates of decadal change in ocean climate variables
-
-> Gradient-based thermal climate velocity
-
-> Marine heatwave cumulative intensity
-
-> Identifying climate refugia based on prescribed thresholds of climate exposure
-
-
 - Rates of decadal change in ocean climate variables
 - Gradient-based thermal climate velocity
 - Marine heatwave cumulative intensity
