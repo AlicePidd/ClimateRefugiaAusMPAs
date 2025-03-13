@@ -16,6 +16,17 @@ This repo contains R code underpinning the analyses for our paper, submitted to 
 
 <sup>5</sup> Commonwealth Scientific and Industrial Research Organization (CSIRO) Environment, Queensland Biosciences Precinct (QBP), Queensland, Australia
 
+## Contents
+
+```
+ClimateRefugiaAusMPAs
+├── figures_tables      <--- .pdf files of figures in main text   
+├── figure_scripts      <--- code to generate figures in main text (outputs in \figures)  
+├── functions           <--- functions used in \scripts   
+├── scripts             <--- code used in the analysis 
+└── supplementary       <--- supplementary materials for the manuscript 
+```
+
 ## Questions or feedback?
 
 Please submit an issue, or email your questions to A.Pidd: alicempidd(at)gmail(dot)com
