@@ -19,3 +19,17 @@ This repo contains R code underpinning the analyses for our paper, submitted to 
 ## Questions or feedback?
 
 Please submit an issue, or email your questions to A.Pidd: alicempidd(at)gmail(dot)com
+
+### Workflow
+
+Earth System Model (ESM) outputs used in this study and the associated code were obtained from publicly available data nodes - Earth System Grid Federation MetaGrid (<https://esgf.nci.org.au/search>). Workflow for downloading, wrangling, and processing ESMs can be found via the <i>hotrstuff</i> package and GitHub repo (Buenafe, Schoeman, & Everett 2024) at <https://github.com/SnBuenafe/hotrstuff> .
+
+This repo includes code to compute and plot the following metrics of climate exposure:
+
+> Rates of decadal change in ocean climate variables
+
+> Gradient-based thermal climate velocity
+
+> Marine heatwave cumulative intensity
+
+> Identifying climate refugia based on prescribed thresholds of climate exposure
