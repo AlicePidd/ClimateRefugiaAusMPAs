@@ -6,7 +6,7 @@ This repo contains R code underpinning the analyses for our paper, submitted to 
 
 **Authors:** Alice M. Pidd^1^, David S. Schoeman^1-2^, Anthony J. Richardson^3-5^, Kylie L. Scales^1^
 
-^1^Global-Change Ecology Research Group, University of the Sunshine Coast.
+<sup>1</sup>Global-Change Ecology Research Group, University of the Sunshine Coast.
 
 ^2^Centre for African Conservation Ecology, Department of Zoology, Nelson Mandela University, Gqeberha, South Africa
 
@@ -19,4 +19,3 @@ This repo contains R code underpinning the analyses for our paper, submitted to 
 ## Questions or feedback?
 
 Please submit an issue, or email your questions to A.Pidd: alicempidd(at)gmail(dot)com
-
