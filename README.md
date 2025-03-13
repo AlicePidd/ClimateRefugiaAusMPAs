@@ -24,7 +24,7 @@ Please submit an issue, or email your questions to A.Pidd: alicempidd(at)gmail(d
 
 Earth System Model (ESM) outputs used in this study and the associated code were obtained from publicly available data nodes via the Earth System Grid Federation MetaGrid (<https://esgf.nci.org.au/search>). Workflow for downloading, wrangling, and processing ESMs can be followed in the <i>hotrstuff</i> package and GitHub repo (Buenafe, Schoeman, & Everett 2024) at <https://github.com/SnBuenafe/hotrstuff> .
 
-In addition to data preparation scripts relevant to the case study region (continental Australia), this repo includes relatively generalisable code that can be used to compute and plot the following metrics of climate exposure:
+In addition to data preparation scripts relevant to the case study region (continental Australia), this repo includes general code that can be used to compute and plot the following metrics of climate exposure:
 
 > Rates of decadal change in ocean climate variables
 
