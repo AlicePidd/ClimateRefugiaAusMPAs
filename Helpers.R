@@ -1,4 +1,4 @@
-# Helper functions for Pidd et al. (2025). Climate refugia could disappear from Australia’s marine protected areas by 2040. 
+# Helper functions for Pidd et al. (2025). 'Climate refugia could disappear from Australia’s marine protected areas by 2040.'
 	# For working with CMIP6 netCDFs
   # Written by Alice Pidd (alicempidd@gmail.com) and David Schoeman (david.schoeman@gmail.com)
 	# June 2023
@@ -10,51 +10,34 @@ install.packages("usethis")
 # Packages ---------------------------------------------------------------------
 
 library(tidyverse)
-library(dplyr)
-library(stringr)
-library(raster)
+library(raster) # Retiring!
 library(terra)
 library(sf)
-library(tidyr)
-# library(ggplot2)
-library(viridis)
 library(tmap) # Retiring!
 library(tmaptools)
-library(RColorBrewer)
-library(lubridate)
 library(ncdf4)
 library(fasterize)
 library(purrr)
 library(furrr)
 library(future)
+
+library(RColorBrewer)
+library(viridis)
+library(stringr)
 library(tictoc)
 library(beepr)
 
-# library(PCICt)
-	# library(heatwaveR)
 
-	# library(rnaturalearth)
-# library(rnaturalearthhires)
-# library(VoCC) # Not available because raster has been deprecated
-	# library(scico)
-	# library(gganimate)
-# library(plyr)
-  # library(data.table)
-  # library(xts)
 
-  # library(ggridges)
-# library(PNWColors)
-# library("wesanderson")
-# library(MoMAColors)
-
-	# IPCC Periods ------------------------------------------------------------
+# IPCC Periods ------------------------------------------------------------
 
 	recent_term <- 1995:2014
 	near_term <- 2021:2040
 	mid_term <- 2041:2060
 	intermediate_term <- 2061:2080
 	long_term <- 2081:2100
-	periods <- c("recent_term", "near_term", "mid_term", "intermediate_term", "long_term")
+	periods <- c("recent_past", "near_term", "mid_term", "intermediate_term", "long_term")
+	
 	
 	
 # IPCC colours as hex ------------------------------------------------------------
@@ -67,17 +50,13 @@ library(beepr)
 	col_ssp585 <- rgb(153, 0, 2, maxColorValue = 255)
 
 	IPCC_pal <- c(col_ssp126, col_ssp245, col_ssp370, col_ssp585)
+	
+	
 
 # Palettes ---------------------------------------------------------------------
 	
-	# col_pal_ref <- c("#007acc", "orange")  # Binary palette (refugia, non-refugia)
-	# col_pal_ref <- c("#205295", "orange")  # Binary palette (refugia, non-refugia)
-	col_pal_ref <- c("#19A7CE", "#EE9322")  # Binary palette (refugia, non-refugia)
-	
-	# col_pal_ref <- c("#1D5B79", "#F6635C")  # Binary palette (refugia, non-refugia)
-	# col_pal_ref <- c("#1450A3", "#FFC436")  # Binary palette (refugia, non-refugia)
-	# col_pal_ref <- c("#19A7CE", "#FED049")  # Binary palette (refugia, non-refugia)
-	# col_pal_ref <- c("#0079FF", "#F2BE22")  # Binary palette (refugia, non-refugia)
+	col_pal_ref <- c("#19A7CE", "#EE9322")  # (refugia, non-refugia)
+
 	
 		
 # Standard map palette ------------------------------------------------------------------------
@@ -97,15 +76,16 @@ library(beepr)
 	mhwROC <- c("MHW-ROC", "Rate of change in marine heatwave cumulative intensity")
 	
 
+	
 # Refugia/Non-refugia - Background layers/munging ------------------------------
-	#** Alice's**
+	
 	percentiles <- seq(0.1, 0.9, 0.025) # A sequence of breaks from 0.1-0.9 (10-90%) at .1 intervals (2.5%)
 	
 	
 	
 # Get bits of CMIP6 file names -------------------------------------------------
 
-	get_CMIP6_bits_dave <- function(file_name) {
+	get_CMIP6_bits <- function(file_name) {
 	  bits <- str_split(basename(file_name), "_") %>% 
 	    unlist()
 	  date_start_stop <- bits[7] %>% 
@@ -131,81 +111,14 @@ library(beepr)
 	                 Year_start = date_start_stop[1],
 	                 Year_end = date_start_stop[2])
 	  return(output)
-	  # e.g., map_df(dir(folder), get_CMIP6_bits)
 	}
 	
 	
-    # file_name_test <- "ph_Omon_CMCC-ESM2_ssp126_r1i1p1f1_crop_201501-203412.nc"
-    	#**Alice edits - made it call from basename not filepath, and made the date format generalisable*
-    	# get_CMIP6_bits <- function(file_name, f_type) { # f_type is the frequency e.g. Omon, Oday
-    	#   bits <- strsplit(basename(file_name), "_") %>% # Had to put basename here
-    	#     unlist()
-    	#   
-    	#   # # Added by chatGPT
-    	#   # print(bits)
-    	# 
-    	#   year_start <- substr(bits[7], 1, 4)
-    	#   month_start <- substr(bits[7], 5, 6)
-    	#   year_end <- substr(bits[7], 8, 11)
-    	#   month_end <- substr(bits[7], 12, 13)
-    	#   
-    	#   start_date <- paste0(year_start, "", month_start)
-    	#   end_date <- paste0(year_end, "", month_end)
-    	#   
-    	#   output <- list(Variable = bits[1],
-    	#                  Frequency = bits[2],
-    	#                  Model = bits[3],
-    	#                  Scenario = bits[4],
-    	#                  Run = bits[5],
-    	#                  Grid = bits[6],
-    	#                  # Year_start = paste(year_start, month_start, sep = ""),
-    	#                  # Year_end = paste(year_end, month_end, sep = "")
-    	#                  Year_start = start_date,
-    	#                  Year_end = end_date)
-    	#   return(output)
-    	#   
-    	#   # e.g., map_df(dir(folder), get_CMIP6_bits)
-    	# }
-    	# 
-    	# 
-    	# 
-    	# # Long variation for when dates are in YYYYMMDD instead of just YYYYMM like the original function
-    	# get_CMIP6_bits_long <- function(file_name, f_type) { # f_type is the frequency e.g. Omon, Oday
-    	#   bits <- strsplit(basename(file_name), "_") %>% # Had to put basename here
-    	#     unlist()
-    	#   
-    	#   # # Added by chatGPT
-    	#   # print(bits)
-    	#   
-    	#   year_start <- substr(bits[7], 1, 4)
-    	#   month_start <- substr(bits[7], 5, 6)
-    	#   year_end <- substr(bits[7], 10, 13)
-    	#   month_end <- substr(bits[7], 14, 15)
-    	#   
-    	#   start_date <- paste0(year_start, "", month_start)
-    	#   end_date <- paste0(year_end, "", month_end)
-    	#   
-    	#   output <- list(Variable = bits[1],
-    	#                  Frequency = bits[2],
-    	#                  Model = bits[3],
-    	#                  Scenario = bits[4],
-    	#                  Run = bits[5],
-    	#                  Grid = bits[6],
-    	#                  # Year_start = paste(year_start, month_start, sep = ""),
-    	#                  # Year_end = paste(year_end, month_end, sep = "")
-    	#                  Year_start = start_date,
-    	#                  Year_end = end_date)
-    	#   return(output)
-    	#   
-    	#   # e.g., map_df(dir(folder), get_CMIP6_bits)
-    	# }
-	
-	
-	
+
 # Make folders if they don't exist ---------------------------------------------
-	#** Alice added these*
+
+	## Folders for all working ScenarioMIP data -----
 	
-	# Folders for all working ScenarioMIP data
 	make_CMIP_folder <- function(fol_obj_name, fol_dir_name, d, m, v) { # d = disk for switching between devices, m = metric e.g. ROC, VoCC, MHW
 	  
 	  if(!dir.exists(fol_obj_name)) {
@@ -217,19 +130,9 @@ library(beepr)
 	}
 	
 	
-	# Folders for all processed data
-	# make_processed_folder <- function(fol_obj_name, fol_dir_name, d, m, v) {
-	#   
-	#   if(!dir.exists(fol_obj_name)) {
-	#     fol_obj_name <- paste0(d, m, v, "_processed/", fol_dir_name) ##** Change path for each variable**
-	#     dir.create(fol_obj_name, recursive = T) # If the folder doesn't exist, create it
-	#   } 
-	#   assign(fol_obj_name, fol_obj_name, envir = .GlobalEnv)
-	#   fol_obj_name
-	# }
 	
+	## Folders for all working historical data -----
 	
-	# Folders for all working historical data
 	make_hist_folder <- function(fol_obj_name, fol_dir_name, d, v) {
 	  
 	  if(!dir.exists(fol_obj_name)) {
@@ -241,7 +144,9 @@ library(beepr)
 	}
 	
 	
-	# Folders for all processed HIST data
+	
+	## Folders for all processed HIST data -----
+	
 	make_HISTprocessed_folder <- function(fol_obj_name, fol_dir_name, d, v) {
 	  
 	  if(!dir.exists(fol_obj_name)) {
@@ -253,17 +158,8 @@ library(beepr)
 	}
 	
 	
-	# # Folders for all wget files
-	# make_wget_folder <- function(fol_obj_name, fol_dir_name) {
-	#   
-	#   if(!dir.exists(fol_obj_name)) {
-	#     fol_obj_name <- paste0("/Volumes/Alice_Dock_1/wget/", fol_dir_name) ##** Change path for each variable**
-	#     dir.create(fol_obj_name, recursive = T) # If the folder doesn't exist, create it
-	#   } 
-	#   assign(fol_obj_name, fol_obj_name, envir = .GlobalEnv)
-	#   fol_obj_name
-	# }
 	
+	## General folder-making function -----
 	
 	make_folder <- function(fol_obj_name, fol_dir_name, d, v) { # d = disk for switching between devices, m = metric e.g. ROC, VoCC, MHW
 	  
@@ -277,23 +173,31 @@ library(beepr)
 	
 	
 	
-# Move processed files to processed folder ---------------------------------------------
-	#** Alice added*
+	## If output folder doesn't exist,  create it -----
 	
+	make_output_folder <- function(folder) {
+	  if(!isTRUE(file.info(folder)$isdir)) dir.create(folder, recursive=TRUE)
+	}
+	
+	
+	
+# Move processed files to processed folder ---------------------------------------------
+
 	move_files <- function(source_fol, new_fol) {
 	  
 	  moved_files <- list.files(source_fol, pattern = ".nc", full.names = TRUE)
-	  
+	 
 	  walk(moved_files, ~{
 	    new_path <- file.path(new_fol, basename(.))
-	    # file.rename(., new_path)
-	    
+
 	    file.copy(., new_path)
-	    file.remove(.) # Remove original file after copying
+	    file.remove(.)
 	  })
 	}
 	
-	# Reconstitute CMIP6 file name -------------------------------------------------
+	
+	
+# Reconstitute CMIP6 file name -------------------------------------------------
 
 	make_CMIP6_file_name <- function(bits_list) {
 		y1 <- as.character(bits_list$Year_start) %>% 
@@ -302,6 +206,7 @@ library(beepr)
 			gsub("-", "", .)
 		paste0(c(unlist(bits_list)[1:6], paste0(y1, "-", y2, ".nc")), collapse = "_")
 		}
+	
 	
 	
 # Get date-type details from netCDF --------------------------------------------
@@ -324,25 +229,12 @@ library(beepr)
 		return(list(strtDate = actual_dts[1], endDate = actual_dts[length(actual_dts)], calendar = cdr))
 	}
 
-
-# If output folder doesn't exist,  create it -----------------------------------
-
-	make_output_folder <- function(folder) {
-		if(!isTRUE(file.info(folder)$isdir)) dir.create(folder, recursive=TRUE)
-		}
-
-# # Get disk name ----------------------------------------------------------------
-# 
-# 	get_disk <- function(folder) {
-# 		strsplit(folder, "/") %>% 
-# 			unlist %>% 
-# 			.[-length(.)] %>% 
-# 			paste(., collapse = "/")
-# 		}
-
+	
 
 # Splice the start of ssp585 onto ssp534-overshoot -----------------------------
-	# For short date formats
+	
+	## For short date formats -----
+	
 	splice_over <- function(f) {
 	  e_yr <- substr(f, nchar(f) - 15, nchar(f) - 12)
 	  e_yr_string <- paste0(as.numeric(e_yr)-1, "12") 
@@ -363,7 +255,9 @@ library(beepr)
 	}
 	
 	
-	# For long date formats
+	
+	## For long date formats -----
+	
 	splice_over_long <- function(f) {
 	  e_yr <- substr(f, nchar(f) - 19, nchar(f) - 16) # Get the end year
 	  e_yr_string <- paste0(as.numeric(e_yr)-1, "1231") # make it a string for the last day of the year before
@@ -380,15 +274,14 @@ library(beepr)
 	  system(paste0("cdo -L -mergetime ", outfold, "/", pt1, " ", outfold, "/", f, " ", outfold, "/", pt3))
 	  
 	  system(paste0("rm ", outfold, "/", pt1))
-	  # system(paste0("rm ", outfold, "/", f)) # Remove old 2040-2100 file
+	  # system(paste0("rm ", outfold, "/", f)) # If need to remove old 2040-2100 file
 	}
 	
 	
 	
-	
 # Cut dates to date range ------------------------------------------------------
-	#** Alice added*
-	cut_dates <- function(f, start_date, end_date, v, start_dt_name, outfol) { # Is going to do the same thing to each file, with file name represented by "f"
+	
+	cut_dates <- function(f, start_date, end_date, v, start_dt_name, outfol) { 
 	  bits <- get_CMIP6_bits_dave(f) 
 	  pat <- paste0(str_replace_all(substr(bits$Year_start, 1, 7), "-", ""))
 	  new_name <- str_replace_all(basename(f), fixed(pat), start_dt_name)
@@ -396,27 +289,77 @@ library(beepr)
 	  cdo_script <- paste0("cdo -s -L -f nc4 ", 
 	                       "-selyear,", start_date, "/", end_date, " ", 
 	                       "-selvar,", v, " ", 
-	                       f, " ", outfol, "/", new_name) # Output path and file name
-	  
-	  system(cdo_script) # Note that CDO reads the code backwards, so selvar happens first, then selyear, then 
+	                       f, " ", outfol, "/", new_name) 
+	  system(cdo_script) 
 	}
 	
 	
 	
-# SpatRaster to netCDF file ----------------------------------------------------
+# Make rasters into netCDF4 files ----------------------------------------------
 	
-	mask2netCDF4 <- function(x, pth = pth, # Where the new file is going
-	                         ncName = ncName, # What we're calling the file
-	                         dname = dname, 
-	                         dlname = dlname)	{
-	  nc_name <- paste0(pth, "/", ncName) # Input netCDF
+	rast2netCDF4 <- function(x, 
+	                         pth = paste0(getwd(), "/", "Data"), 
+	                         ncName = "mask.nc", 
+	                         dname = "tos", 
+	                         dlname = "tos")	{
+	  nc_name <- paste0(pth, "/", ncName) 
+	  
 	  # Temporary files
 	  nc1 <- nc_name %>% 
 	    str_replace(".nc", "_tmp1.nc")
 	  nc2 <- nc_name %>% 
 	    str_replace(".nc", "_tmp2.nc")
-	  # r1out <- x[] # Write mask as a matrix
 	  
+	  r1out <- x[] # Write mask as a matrix
+	  
+	  # Set up the temporal and spatial dimensions	
+	  lon <- terra::xFromCol(x, 1:ncol(x)) # Lons - from raster
+	  nlon <- length(lon)
+	  lat <- yFromRow(x, 1:nrow(x)) # Lats from raster
+	  nlat <- length(lat)
+	  time <- time_length(interval(ymd_hms("1850-01-01-00:00:00"), "1850-01-01"), unit = "day")
+	  nt <- length(time)
+	  tunits <- "days since 1850-01-011 00:00:00.0 -0:00"
+	  
+	  # Use this to build a multi-layer array	
+	  tmp_array <- array(r1out, dim=c(nlon, nlat, nt)) # Write as an array
+	  
+	  # Set neCDF variables and dimensions
+	  londim <- ncdim_def("lon","degrees_east", as.double(lon), calendar = "365_day", longname = "longitude") 
+	  latdim <- ncdim_def("lat","degrees_north", as.double(lat), calendar = "365_day", longname = "latitude") 
+	  timedim <- ncdim_def("time", tunits, as.double(time), calendar = "365_day", longname = "time")
+	  fillvalue <- missvalue <- 1.00000002004088e+20 # Na values
+	  tmp_def <- ncvar_def(dname,"deg_C", list(londim, latdim, timedim), missvalue, dlname, prec = "double")
+	  
+	  # Create netCDF file and assign arrays
+	  ncout <- nc_create(nc1, list(tmp_def)) # Don't force it to be netCDF4, or CDO will fail
+	  ncvar_put(ncout, tmp_def, tmp_array)
+	  
+	  # Put additional attributes into dimension and data variables
+	  ncatt_put(ncout, "lon", "axis", "X")
+	  ncatt_put(ncout, "lat", "axis", "Y")
+	  ncatt_put(ncout, "time", "axis", "T")
+	  
+	  system(paste0("nccopy -k 4 ", nc1, " ", nc2)) # Convert to netCDF4 "classic model" mode for CDO to be able to read it
+	  system(paste0("cdo -invertlat ", nc2, " ", nc_name)) # Convert to netCDF4 "classic model" mode for CDO to be able to read it
+	  system(paste0("rm ", nc1, " ", nc2))
+	}	
+	
+	
+	
+# SpatRaster to netCDF file ----------------------------------------------------
+	
+	mask2netCDF4 <- function(x, pth = pth, 
+	                         ncName = ncName, 
+	                         dname = dname, 
+	                         dlname = dlname)	{
+	  nc_name <- paste0(pth, "/", ncName) 
+	  # Temporary files
+	  nc1 <- nc_name %>% 
+	    str_replace(".nc", "_tmp1.nc")
+	  nc2 <- nc_name %>% 
+	    str_replace(".nc", "_tmp2.nc")
+
 	  # Set up the temporal and spatial dimensions	
 	  lon <- terra::xFromCol(x, 1:ncol(x)) # Lons - from raster
 	  nlon <- length(lon)
@@ -429,8 +372,8 @@ library(beepr)
 	  tunits <- "days since 1850-01-011 00:00:00.0 -0:00"
 	  
 	  # Use this to build a multi-layer array	
-	  # tmp_array <- array(r1out, dim=c(nlon, nlat, nt)) # Write as an array
 	  tmp_array <- array(x[], dim=c(nlon, nlat, nt)) # Write as an array
+	  
 	  # Set netCDF variables and dimensions
 	  londim <- ncdim_def("lon","degrees_east", as.double(lon), calendar = "365_day", longname = "longitude")
 	  latdim <- ncdim_def("lat","degrees_north", as.double(lat), calendar = "365_day", longname = "latitude")
@@ -461,11 +404,8 @@ library(beepr)
 	    change_grid_code(., "_mrgsurf_") %>% ## Added
 	    paste0(surface_folder, "/", .)
 	  
-	  # Select the first level of the 
 	  netCDF <- nc_open(f)
-	  # lev <- ncvar_get(netCDF, level)[1:5] # Trying 1st 5 levels to see if it helps with data loss
 	  lev <- ncvar_get(netCDF, level)[1]
-	  
 	  
 	  cdo_script <- paste0("cdo -sellevel,", lev ," ", f, " ", output_file)
 	  system(cdo_script)
@@ -499,8 +439,8 @@ library(beepr)
 	
 	
 	
-	
 # Scenario regrid/crop ---------------------------------------------------------
+	
 	regrid_n_crop <- function(f,
 	                              v,
 	                              cell_res = 0.25, 
@@ -511,12 +451,10 @@ library(beepr)
 	  ofile <- change_grid_code(f, "_cropregrid_")
 	  # ofile <- file.path(cropped_CMIP_folder, basename(ofile)) #move to cropped folder (should be the same with each variable)
 	  
-	  
 	  cdo_text <- paste0("cdo -L -sellonlatbox,", xmin, ",", xmax, ",", ymin, ",", ymax,  
 	                     " -remapbil,r", 360*(1/cell_res), "x", 180*(1/cell_res), 
 	                     " -select,name=", v, " ", infold, "/", f, " ", outfold, "/", ofile)
 	  system(cdo_text)
-	  
 	}
 	
 	
@@ -540,7 +478,6 @@ library(beepr)
 	
 
 # # Crop netCDF ----------------------------------------------------------------
-	#**Alice edits - tried to crop by existing extent from a shapefile but couldn't work it, had to hardwire*
 
   crop_fun <- function(f) {
 	   lon1 <- -110
@@ -549,7 +486,7 @@ library(beepr)
 	   lat2 <- -5
 	   
 	   ofile <- change_grid_code(f, "_cropregrid_")
-	   ofile <- file.path(cropped_CMIP_folder, basename(ofile)) #move to cropped folder (should be the same with each variable)
+	   ofile <- file.path(cropped_CMIP_folder, basename(ofile))
 	   
 	   # This one below works 
 	   # pattern <- "(^(?:[^_]*_){7})([^_]+)"  # Regular expression pattern to capture the parts before and after position [8]
@@ -558,25 +495,24 @@ library(beepr)
 	   
 	   cdo_text <- paste0("cdo -s -L -f nc4 -z zip -sellonlatbox,", lon1, ",", lon2, ",", lat1, ",", lat2, " ", f, " ", ofile)
 	   system(cdo_text) 
-	  # system(paste0("rm ", f))
     }
     # e.g., walk(files, crop_fun)
 
+	
 
 # Change file name in "grid" position ------------------------------------------
-	#** Alice added, with Dave's help*
 	# Matches the file naming to the stage of munging
 	
 	change_grid_code <- function(f, pattern) {
-	 file <- basename(f) # had to add this as get_CMIP6_bits was creating bits based on the entire path and filename
+	 file <- basename(f)
 	 find <- paste0("_", get_CMIP6_bits_dave(file)$Grid, "_")
 	 replacement <- pattern
 	 return(str_replace_all(file, find, replacement))
 	}
 	
 	
+	
 # Change file name in "year" position ------------------------------------------
-	#** Alice added, with Dave's help*
 	# Matches the file naming to the stage of munging
 	
 	change_year_code <- function(f, pattern) {
@@ -588,21 +524,20 @@ library(beepr)
 	
 	
 	
-	
 # Cut into IPCC terms ----------------------------------------------------------
 
 	cut_IPCC_terms <- function(f, term, v, pth) {
 
 	  new_name <- basename(f) %>%
-	    change_grid_code(., paste0("_", term[3], "_")) %>%  # Rename the grid code spot to IPCC term
+	    change_grid_code(., paste0("_", term[3], "_")) %>% 
 	    paste0(pth, "/", .)
 
-	  n1 <- basename(new_name) %>% # Just the file name, not the path
-	    str_split("_", simplify = TRUE) %>% # Split by "_"
+	  n1 <- basename(new_name) %>% 
+	    str_split("_", simplify = TRUE) %>% 
 	    as.vector()
 	  n2 <- n1
-	  n2[7] <- paste0(term[1], "01", "-", term[2], "12") # Replace the model name, which is in the third slot with "ensemble"
-	  out_name <- paste(n2, collapse = "_") %>%  # Build the output file name
+	  n2[7] <- paste0(term[1], "01", "-", term[2], "12") 
+	  out_name <- paste(n2, collapse = "_") %>%
 	    paste0(pth, "/", .)
 
 	  cdo_script <- paste0("cdo -s -L -f nc4 ",
@@ -612,59 +547,14 @@ library(beepr)
 	}
 
 
-	
-	
-# Make rasters into netCDF4 files ----------------------------------------------
-	
-	rast2netCDF4 <- function(x, 
-	                         pth = paste0(getwd(), "/", "Data"), 
-	                         ncName = "mask.nc", 
-	                         dname = "tos", 
-	                         dlname = "tos")	{
-	  nc_name <- paste0(pth, "/", ncName) # Input netCDF
-	  # Temporary files
-	  nc1 <- nc_name %>% 
-	    str_replace(".nc", "_tmp1.nc")
-	  nc2 <- nc_name %>% 
-	    str_replace(".nc", "_tmp2.nc")
-	  r1out <- x[] # Write mask as a matrix
-	  # Set up the temporal and spatial dimensions	
-	  lon <- terra::xFromCol(x, 1:ncol(x)) # Lons - from raster
-	  nlon <- length(lon)
-	  lat <- yFromRow(x, 1:nrow(x)) # Lats from raster
-	  nlat <- length(lat)
-	  time <- time_length(interval(ymd_hms("1850-01-01-00:00:00"), "1850-01-01"), unit = "day")
-	  nt <- length(time)
-	  tunits <- "days since 1850-01-011 00:00:00.0 -0:00"
-	  # Use this to build a multi-layer array	
-	  tmp_array <- array(r1out, dim=c(nlon, nlat, nt)) # Write as an array
-	  # Set neCDF variables and dimensions
-	  londim <- ncdim_def("lon","degrees_east", as.double(lon), calendar = "365_day", longname = "longitude") 
-	  latdim <- ncdim_def("lat","degrees_north", as.double(lat), calendar = "365_day", longname = "latitude") 
-	  timedim <- ncdim_def("time", tunits, as.double(time), calendar = "365_day", longname = "time")
-	  fillvalue <- missvalue <- 1.00000002004088e+20 # Na values
-	  tmp_def <- ncvar_def(dname,"deg_C", list(londim, latdim, timedim), missvalue, dlname, prec = "double")
-	  # Create netCDF file and assign arrays
-	  ncout <- nc_create(nc1, list(tmp_def)) # Don't force it to be netCDF4, or CDO will fail
-	  ncvar_put(ncout, tmp_def, tmp_array)
-	  # Put additional attributes into dimension and data variables
-	  ncatt_put(ncout, "lon", "axis", "X")
-	  ncatt_put(ncout, "lat", "axis", "Y")
-	  ncatt_put(ncout, "time", "axis", "T")
-	  system(paste0("nccopy -k 4 ", nc1, " ", nc2)) # Convert to netCDF4 "classic model" mode for CDO to be able to read it
-	  system(paste0("cdo -invertlat ", nc2, " ", nc_name)) # Convert to netCDF4 "classic model" mode for CDO to be able to read it
-	  system(paste0("rm ", nc1, " ", nc2))
-	}	
-	
-	
-	
-	
+
 # Merge netCDFs from the same model and scenario -------------------------------
-	#**Alice/ChatGPT workaround using intermediate files*
-	  ##** Alice edits - added the variable (v) and freq (f) for the file naming, so code is generic across vars. Also added ifelse in case files downloaded are already merged*
-		merge_files <- function(model, scenario, variant, infold, outfold, v, f) { 
+	
+	merge_files <- function(model, scenario, variant, infold, outfold, v, f) { 
+		  
 	  files <- dir(infold, pattern = model)
 	  files <- files[grepl(scenario, files)]
+	  
 	  y1 <- get_CMIP6_bits_dave(files[1])$Year_start %>%
 	    as.character() %>%
 	    gsub("-", "", .)
@@ -678,8 +568,9 @@ library(beepr)
 	  
 	  system(paste0("cdo -s -L mergetime ", paste(input_files, collapse = " "), " ", intermediate_file)) 
 	  system(paste0("cdo -s -L select,name=", v, " ", intermediate_file, " ", output_file))
+	  
 	  file.remove(intermediate_file)
-	  }
+  }
 	
 
 	
@@ -690,9 +581,7 @@ library(beepr)
 	  
 	  files <- dir(infold, pattern = model)
 	  model_files <- files[grepl(model, files)]
-	  
-	  # model_files <- files %>% filter(Model == model) # Can I use the same code from above
-	  
+
 	  y1 <- get_CMIP6_bits_dave(model_files[1])$Year_start %>%
 	    as.character() %>%
 	    gsub("-", "", .)
@@ -710,43 +599,50 @@ library(beepr)
 	}
 	
 	
-	# # Same as above, but using the long date format (get_CMIP6_bits_long) function
-	# merge_HIST_files_long <- function(model, infold, outfold, v, f) { 
-	#   
-	#   files <- dir(infold, pattern = model)
-	#   model_files <- files[grepl(model, files)]
-	#   
-	#   # model_files <- files %>% filter(Model == model) # Can I use the same code from above
-	#   
-	#   y1 <- get_CMIP6_bits_long(model_files[1])$Year_start %>%
-	#     as.character() %>%
-	#     gsub("-", "", .)
-	#   y2 <- get_CMIP6_bits_long(model_files[length(model_files)])$Year_end %>%
-	#     as.character() %>%
-	#     gsub("-", "", .)
-	#   
-	#   input_files <- paste0(infold, "/", model_files)
-	#   output_file <- paste0(outfold, "/", v, "_", f, "_", model, "_historical_r1i1p1f1_mrg_", y1, "-", y2, ".nc") 
-	#   intermediate_file <- paste0(outfold, "/", v, "_", f, "_", model, "_historical_r1i1p1f1_mrg_temp.nc") 
-	#   
-	#   system(paste0("cdo -s -L mergetime ", paste(input_files, collapse = " "), " ", intermediate_file)) 
-	#   system(paste0("cdo -s -L select,name=", v, " ", intermediate_file, " ", output_file))
-	#   file.remove(intermediate_file)
-	# }
+	## Same as above, but using the long date format (get_CMIP6_bits_long) function -----
+	
+	merge_HIST_files_long <- function(model, infold, outfold, v, f) {
+
+	  files <- dir(infold, pattern = model)
+	  model_files <- files[grepl(model, files)]
+
+	  # model_files <- files %>% filter(Model == model) # Can I use the same code from above
+
+	  y1 <- get_CMIP6_bits_long(model_files[1])$Year_start %>%
+	    as.character() %>%
+	    gsub("-", "", .)
+	  y2 <- get_CMIP6_bits_long(model_files[length(model_files)])$Year_end %>%
+	    as.character() %>%
+	    gsub("-", "", .)
+
+	  input_files <- paste0(infold, "/", model_files)
+	  output_file <- paste0(outfold, "/", v, "_", f, "_", model, "_historical_r1i1p1f1_mrg_", y1, "-", y2, ".nc")
+	  intermediate_file <- paste0(outfold, "/", v, "_", f, "_", model, "_historical_r1i1p1f1_mrg_temp.nc")
+
+	  system(paste0("cdo -s -L mergetime ", paste(input_files, collapse = " "), " ", intermediate_file))
+	  system(paste0("cdo -s -L select,name=", v, " ", intermediate_file, " ", output_file))
+	  file.remove(intermediate_file)
+	}
 	
 	
-# Join HISTORICAL and SCENARIO netCDFs together into the same time series------
+	
+# Join historical and SSP netCDFs together into the same time series -----------
 
 	join_hist_n_scenario <- function(f) {
+	  
 	  hist_file <- str_subset(map_chr(HISTfiles, basename), get_CMIP6_bits_dave(f)$Model)
-	  ssp_year <- paste0(str_remove_all(substr(get_CMIP6_bits_dave(f)$Year_start, 1, 7), "-"))  # This gives "201501"
-	  hist_year <- paste0(str_remove_all(substr(get_CMIP6_bits_dave(hist_file)$Year_start, 1, 7), "-"))  # This gives "1993-01-01"
+	  ssp_year <- paste0(str_remove_all(substr(get_CMIP6_bits_dave(f)$Year_start, 1, 7), "-")) 
+	  hist_year <- paste0(str_remove_all(substr(get_CMIP6_bits_dave(hist_file)$Year_start, 1, 7), "-"))
+	  
 	  output_file <- basename(f) %>%
 	    str_replace(ssp_year, hist_year) %>%
 	    paste0(joined_CMIP_folder, "/", .)
+	  
 	  cdo_code <- paste0("cdo -L -mergetime ", merged_HIST_folder, "/", hist_file, " ", merged_CMIP_folder, "/", f, " ", output_file)
+	  
 	  system(cdo_code)
 	}
+	
 	
 	
 # Get data from one year only --------------------------------------------------
@@ -757,13 +653,12 @@ library(beepr)
 
 	
 # Get data from range of years --------------------------------------------------
-  #**Alice edits - blocked this out as I've been checking the dates are between 2015-2100 as I go*
+	
 	get_Years <- function(nc_file, yr1, yr2, infold, outfold) {
 		bits <- get_CMIP6_bits(nc_file)
-			# y1 <- year(bits$Year_start)
-			# y2 <- year(bits$Year_end)
 			y1 <- as.integer(substr(bits$Year_start, 1, 4))
 			y2 <- as.integer(substr(bits$Year_end, 1, 4))
+			
 		if(y1 < yr1 | y2 > yr2) {
 			new_name <- nc_file %>%
 				strsplit(paste0("_", as.character(y1))) %>%
@@ -784,6 +679,7 @@ library(beepr)
 # Dump leap days and set to standard calendar ----------------------------------
 
 	fix_cal <- function(f, infold) {
+	  
 			if(!grepl("gregorian", netCDF_date_deets(paste0(infold, "/", f))$calendar)) {
 				cat(paste0(f, " does not have leap days"))
 				cat("\n")
@@ -799,8 +695,9 @@ library(beepr)
 				}
 	}
 
+	
 
-# Adjust the extent of a raster object loaded from CDO so that it's logical --------------------------------------------------------------------------------
+# Adjust the extent of a raster object loaded from CDO so that it's logical ------------
 	
 	fix_cdo_extent <- function(rf) {
 	  rf %>% 
@@ -812,35 +709,34 @@ library(beepr)
 	    extend(., extent(100, 170, -50, 0))
 	}
 	
-# Shapefiles - get, transform projection, crop  -------------------------------------------------------------------
-	#** Alice's**
-	
+# Shapefiles - get, transform projection, crop  --------------------------------
+
 	get_shps <- function(shp_dir){
 	  shp <- st_read(shp_dir) %>% 
 	    sf::st_transform(4326) %>% 
 	    sf::st_crop(ext(base_r))
 	}
-	# e.g., eez <- get_shps("~/_MastersUSCMPAs/Data/_shapefiles/ausEEZ/au_eez_pol_april2022.shp")
-	
+
 	
 	
 # Present day data -------------------------------------------------------------
-	#** Alice's**
-	# MPAs only
-	get_PDMPA <- function(r_list) { #r_list will be 'out'
+	
+	## MPAs only -----
+	
+	get_PDMPA <- function(r_list) { 
 	  
 	  stacked <- stack(r_list)
 	  PD_rast <- terra::subset(stacked, 
 	                            grep("recent", names(stacked)))
-	  PD_df <- as.data.frame(PD_rast) #This is the line that gets stuck
+	  PD_df <- as.data.frame(PD_rast) 
 	  
 	  return(list(rast = PD_rast, df = PD_df))
-	  
 	}
 	
 	
-	# Whole EEZ
-	get_PDEEZ <- function(r_list) { #r_list will be 'outeez'
+	## Whole EEZ -----
+	
+	get_PDEEZ <- function(r_list) { 
 	  
 	  stacked <- stack(r_list)
 	  PD_rastEEZ <- terra::subset(stacked, 
@@ -848,8 +744,5 @@ library(beepr)
 	  PD_dfEEZ <- as.data.frame(PD_rastEEZ)
 	  
 	  return(list(rast = PD_rastEEZ, df = PD_dfEEZ))
-	  
 	}
-	
-	
 	

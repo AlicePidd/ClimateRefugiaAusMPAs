@@ -107,34 +107,6 @@
       saveRDS(joined_shps, "/Volumes/AliceShield/clim_data/masks/landsea_masks/joined_shps_shapefile.RDS")
 
 
-# Make shapefile for outside MPAs, i.e., IUCN category V-VI mpas + the remaining EEZ outside of cat I-IV mpas
-      # EEZ - Joined_shps
-
-
-
-# # Individual networks ------------
-      
-#     southeast <- joined_shps %>%
-#       subset(NETNAME == "South-east")
-#     
-#     north <- joined_shps %>%
-#       subset(NETNAME == "North")
-#     
-#     northwest <- joined_shps %>%
-#       subset(NETNAME == "North-west")
-#     
-#     CSandGBR <- joined_shps %>%
-#       subset(NETNAME == "Coral Sea" | NETNAME == "GBR")
-#     
-#     southwest <- joined_shps %>%
-#       subset(NETNAME == "South-west")
-#     
-#     tempeast <- joined_shps %>%
-#       subset(NETNAME == "Temperate East")
-    # 
-    # netw_list <- as.list(north, CSandGBR, tempeast, southeast, southwest, northwest)
-    # netw_list <- list("north", "CSandGBR", "tempeast", "southeast", "southwest", "northwest")
-
       
 # Create rasters out of the polygons using fasterize, and crop/regrid to base_r --------
 
