@@ -27,10 +27,6 @@ ClimateRefugiaAusMPAs
 └── supplementary       <--- supplementary materials for the manuscript 
 ```
 
-## Questions or feedback?
-
-Please submit an issue, or email your questions to A.Pidd: alicempidd(at)gmail(dot)com
-
 ## Workflow
 
 Earth System Model (ESM) outputs used in this study and the associated code were obtained from publicly available data nodes via the Earth System Grid Federation MetaGrid (<https://esgf.nci.org.au/search>). Workflow for downloading, wrangling, and processing ESMs can be followed in the <i>hotrstuff</i> package and GitHub repo (Buenafe, Schoeman, & Everett 2024) at <https://github.com/SnBuenafe/hotrstuff> .
@@ -53,5 +49,9 @@ All analyses were run on a machine with the following specifications:
 
 R version 4.4.2 (2024-10-31) -- "Pile of Leaves"
 ```
+
+## Questions or feedback?
+
+Please submit an issue, or email your questions to A.Pidd: alicempidd(at)gmail(dot)com
 
 
