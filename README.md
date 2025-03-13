@@ -20,11 +20,3 @@ This repo contains R code underpinning the analyses for our paper:
 
 Please submit an issue, or email your questions to A.Pidd: alicempidd(at)gmail(dot)com
 
-# ```         
-# ClimateRefugiaAusMPAs
-# ├── figures             <--- .png files of figures in main text   
-# ├── figure_scripts      <--- code to generate figures in main text (outputs in \figures)  
-# ├── functions           <--- bespoke functions used in \scripts   
-# ├── renv                <--- library containing R packages used in this project   
-# └── scripts             <--- code used in the analysis
-# ```
