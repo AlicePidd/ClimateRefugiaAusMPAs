@@ -1,6 +1,4 @@
----
-title: ClimateRefugiaAusMPAs
----
+# ClimateRefugiaAusMPAs
 
 This repo contains R code underpinning the analyses for our paper, submitted to Global Change Biology:
 
