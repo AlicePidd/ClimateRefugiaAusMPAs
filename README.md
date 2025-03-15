@@ -18,11 +18,11 @@ This repo contains R code underpinning the analyses for our paper, submitted to 
 
 ## Contents
 
-```
+```         
 ClimateRefugiaAusMPAs
-├── figures_tables      <--- .pdf files of figures in main text   
+├── figures_tables      <--- .pdf files of figures and tables in the main text   
 ├── figure_scripts      <--- code to generate figures in main text (outputs in \figures)  
-├── functions           <--- functions used in \scripts   
+├── functions           <--- functions used in \scripts 
 ├── scripts             <--- code used in the analysis 
 └── supplementary       <--- supplementary materials for the manuscript 
 ```
@@ -33,22 +33,25 @@ Earth System Model (ESM) outputs used in this study and the associated code were
 
 In addition to data preparation scripts relevant to the case study region (continental Australia), this repo includes general code for computing and plotting the following metrics of marine climate exposure:
 
-- Rates of decadal change in ocean climate variables
-- Gradient-based thermal climate velocity
-- Marine heatwave cumulative intensity
-- Identifying climate refugia based on prescribed thresholds of climate exposure
+-   Rates of decadal change in ocean climate variables
+-   Gradient-based thermal climate velocity
+-   Marine heatwave cumulative intensity
+-   Identifying climate refugia based on prescribed thresholds of climate exposure
 
 ## Machine specifications
 
 All analyses were run on a machine with the following specifications:
 
 ```         
-
-R version 4.4.3 (2025-02-28) -- "Trophy Case"
+Model Name:	  MacBook Pro
+Chip:	        Apple M3 Max
+Cores:	      16 (12 performance and 4 efficiency)
+Memory:	      64 GB
+OS:           Sequoia Version 15.3.1 (24D70)
+R version:    4.4.3 (2025-02-28) -- "Trophy Case"
+GitHub:       Version 3.4.16 (arm64)
 ```
 
 ## Questions or feedback?
 
 Please submit an issue, or email your questions to A.Pidd: alicempidd(at)gmail(dot)com
-
-
