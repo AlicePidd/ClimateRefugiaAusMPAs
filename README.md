@@ -43,12 +43,12 @@ In addition to data preparation scripts relevant to the case study region (conti
 All analyses were run on a machine with the following specifications:
 
 ```         
-Model Name:       MacBook Pro
-Chip:         Apple M3 Max
-Cores:        16 (12 performance and 4 efficiency)
+Model Name:     MacBook Pro
+Chip:           Apple M3 Max
+Cores:          16 (12 performance and 4 efficiency)
 Memory:         64 GB
-OS:         Sequoia Version 15.3.1 (24D70)
-R version:        4.4.3 (2025-02-28) -- "Trophy Case"
+OS:             Sequoia Version 15.3.1 (24D70)
+R version:      4.4.3 (2025-02-28) -- "Trophy Case"
 GitHub:         Version 3.4.16 (arm64)
 ```
 
