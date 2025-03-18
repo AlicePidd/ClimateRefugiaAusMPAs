@@ -36,7 +36,7 @@ In addition to data preparation scripts relevant to the case study region (here,
 -   Rates of decadal change in ocean climate variables
 -   Gradient-based thermal climate velocity
 -   Marine heatwave cumulative intensity
--   Identifying climate refugia based on prescribed thresholds of climate exposure
+-   Identifying climate refugia based on pre-determined thresholds of climate exposure
 
 ## Machine specifications
 

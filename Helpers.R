@@ -29,57 +29,107 @@ library(beepr)
 
 
 
-# IPCC Periods ------------------------------------------------------------
 
-	recent_term <- 1995:2014
-	near_term <- 2021:2040
-	mid_term <- 2041:2060
-	intermediate_term <- 2061:2080
-	long_term <- 2081:2100
-	periods <- c("recent_past", "near_term", "mid_term", "intermediate_term", "long_term")
-	
-	
-	
-# IPCC colours as hex ------------------------------------------------------------
+# Make folders if they don't exist ---------------------------------------------
 
-	col_ssp119 <- rgb(84, 39, 143, maxColorValue = 255)
-	col_ssp126 <- rgb(0, 52, 102, maxColorValue = 255)
-	col_ssp245 <- rgb(112, 160, 205, maxColorValue = 255)
-	col_ssp370 <- rgb(196, 121, 0, maxColorValue = 255)
-	col_ssp534_over <- rgb(196, 121, 0, maxColorValue = 255)
-	col_ssp585 <- rgb(153, 0, 2, maxColorValue = 255)
+make_folder <- function(d, m, v, fol_dir_name) {
+  
+  folder_path <- file.path(paste0(d, "/", m, "/", v, "/", fol_dir_name))
+  if (!dir.exists(folder_path)) {
+    dir.create(folder_path, recursive = TRUE)
+    message("✅ Folder created: ", folder_path)
+  } else {
+    message("📂 Folder already exists: ", folder_path)
+  }
+  return(folder_path)
+}
 
-	IPCC_pal <- c(col_ssp126, col_ssp245, col_ssp370, col_ssp585)
-	
-	
 
-# Palettes ---------------------------------------------------------------------
-	
-	col_pal_ref <- c("#19A7CE", "#EE9322")  # (refugia, non-refugia)
 
-	
-		
-# Standard map palette ------------------------------------------------------------------------
 
-	map_palette <- scico(11, alpha = NULL, begin = 0, end = 1, direction = 1, palette = "bilbao")
+# Lists, palettes, background data ---------------------------------------------
+
+  ## IPCC Periods ------
+  
+  	recent_term <- 1995:2014
+  	near_term <- 2021:2040
+  	mid_term <- 2041:2060
+  	intermediate_term <- 2061:2080
+  	long_term <- 2081:2100
+  	periods <- c("recent_past", "near_term", "mid_term", "intermediate_term", "long_term")
 	
 	
+	## IPCC terms list  ------
 	
-# Metric labels for plotting ----------------------------------------------
-	
-	tos <- c("tos", "temperature of surface (°C)")
-	o2 <- c("o2", "dissolved oxygen concentration (units)")
-	ph <- c("ph", "pH (mol H Kg¯¹)")
-	chl <- c("chl", "Mass Concentration of Total Phytoplankton in Sea Water")
-	VoCc <- c("VoCC", "Gradient-based climate velocity (km/decade)")
-	mhw <- c("MHW_CumInt", "Marine heatwave cumulative intensity")
-	mhwROC <- c("MHW-ROC", "Rate of change in marine heatwave cumulative intensity")
-	
+  	IPCC_terms <- list(recent = c("1995", "2014", "recent-term"),
+  	                   near = c("2021", "2040", "near-term"), 
+  	                   mid = c("2041", "2060", "mid-term"), 
+  	                   intermediate = c("2061", "2080", "intermediate-term"), # Added period to fill in gap
+  	                   long = c("2081", "2100", "long-term"))
 
 	
-# Refugia/Non-refugia - Background layers/munging ------------------------------
+  ## IPCC colours as hex ------
+  
+  	col_ssp119 <- rgb(84, 39, 143, maxColorValue = 255)
+  	col_ssp126 <- rgb(0, 52, 102, maxColorValue = 255)
+  	col_ssp245 <- rgb(112, 160, 205, maxColorValue = 255)
+  	col_ssp370 <- rgb(196, 121, 0, maxColorValue = 255)
+  	col_ssp534_over <- rgb(196, 121, 0, maxColorValue = 255)
+  	col_ssp585 <- rgb(153, 0, 2, maxColorValue = 255)
+  
+  	IPCC_pal <- c(col_ssp126, col_ssp245, col_ssp370, col_ssp585)
 	
-	percentiles <- seq(0.1, 0.9, 0.025) # A sequence of breaks from 0.1-0.9 (10-90%) at .1 intervals (2.5%)
+
+  ## Palettes ------
+  	
+  	col_pal_ref <- c("#19A7CE", "#EE9322")  # (refugia, non-refugia)
+
+  	
+  ## Metric labels for plotting ------
+  	
+  	tos <- c("tos", "temperature of surface (°C)", "(°C)")
+  	o2 <- c("o2", "dissolved oxygen concentration (units)", "(units)")
+  	ph <- c("ph", "pH (mol H Kg¯¹)", "(mol H Kg¯¹)")
+  	VoCc <- c("VoCC", "Gradient-based climate velocity (km/decade)", "(km/decade)")
+  	mhw <- c("MHW_CumInt", "Marine heatwave cumulative intensity", "(degree days)")
+  	mhwROC <- c("MHW-ROC", "Rate of change in marine heatwave cumulative intensity", "(degree days / decade")
+  	
+  	
+  	
+  ## SSP naming and ordering ------
+  	
+  	ssp_num <- list("ssp126", "ssp245", "ssp370", "ssp585")
+  	
+  	stack_order <- c("recent", #"present", 
+  	                 "near", 
+  	                 "mid", 
+  	                 "intermediate", 
+  	                 "long")
+  	
+  	
+	
+# Cut files into IPCC reporting periods ----------------------------------------
+	
+	cut_IPCC_terms <- function(f, term, v, pth) {
+	  
+	  new_name <- basename(f) %>%
+	    change_grid_code(., paste0("_", term[3], "_")) %>% 
+	    paste0(pth, "/", .)
+	  
+	  n1 <- basename(new_name) %>% 
+	    str_split("_", simplify = TRUE) %>% 
+	    as.vector()
+	  n2 <- n1
+	  n2[7] <- paste0(term[1], "01", "-", term[2], "12") 
+	  out_name <- paste(n2, collapse = "_") %>%
+	    paste0(pth, "/", .)
+	  
+	  cdo_script <- paste0("cdo -s -L -f nc4 ",
+	                       "-selyear,", paste0(term[1], "/", term[2]), " ",
+	                       "-selvar,", v, " ", f, " ", out_name, ".nc")
+	  system(cdo_script)
+	}
+	
 	
 	
 	
@@ -113,71 +163,6 @@ library(beepr)
 	  return(output)
 	}
 	
-	
-
-# Make folders if they don't exist ---------------------------------------------
-
-	## Folders for all working ScenarioMIP data -----
-	
-	make_CMIP_folder <- function(fol_obj_name, fol_dir_name, d, m, v) { # d = disk for switching between devices, m = metric e.g. ROC, VoCC, MHW
-	  
-	  if(!dir.exists(fol_obj_name)) {
-	    fol_obj_name <- paste0(d, "/", m, "/", v, "/", fol_dir_name) ##** Change path for each variable**
-	    dir.create(fol_obj_name, recursive = T) # If the folder doesn't exist, create it
-	  } 
-	  assign(fol_obj_name, fol_obj_name, envir = .GlobalEnv)
-	  fol_obj_name
-	}
-	
-	
-	
-	## Folders for all working historical data -----
-	
-	make_hist_folder <- function(fol_obj_name, fol_dir_name, d, v) {
-	  
-	  if(!dir.exists(fol_obj_name)) {
-	    fol_obj_name <- paste0(d, "/", v, "/", fol_dir_name) ##** Change path for each variable**
-	    dir.create(fol_obj_name, recursive = T) # If the folder doesn't exist, create it
-	  } 
-	  assign(fol_obj_name, fol_obj_name, envir = .GlobalEnv)
-	  fol_obj_name
-	}
-	
-	
-	
-	## Folders for all processed HIST data -----
-	
-	make_HISTprocessed_folder <- function(fol_obj_name, fol_dir_name, d, v) {
-	  
-	  if(!dir.exists(fol_obj_name)) {
-	    fol_obj_name <- paste0(d, "/", v, "_processed/", fol_dir_name) ##** Change path for each variable**
-	    dir.create(fol_obj_name, recursive = T) # If the folder doesn't exist, create it
-	  } 
-	  assign(fol_obj_name, fol_obj_name, envir = .GlobalEnv)
-	  fol_obj_name
-	}
-	
-	
-	
-	## General folder-making function -----
-	
-	make_folder <- function(fol_obj_name, fol_dir_name, d, v) { # d = disk for switching between devices, m = metric e.g. ROC, VoCC, MHW
-	  
-	  if(!dir.exists(fol_obj_name)) {
-	    fol_obj_name <- paste0(d, "/", v, "/", fol_dir_name) ##** Change path for each variable**
-	    dir.create(fol_obj_name, recursive = T) # If the folder doesn't exist, create it
-	  } 
-	  assign(fol_obj_name, fol_obj_name, envir = .GlobalEnv)
-	  fol_obj_name
-	}
-	
-	
-	
-	## If output folder doesn't exist,  create it -----
-	
-	make_output_folder <- function(folder) {
-	  if(!isTRUE(file.info(folder)$isdir)) dir.create(folder, recursive=TRUE)
-	}
 	
 	
 	
@@ -523,29 +508,6 @@ library(beepr)
 	}
 	
 	
-	
-# Cut into IPCC terms ----------------------------------------------------------
-
-	cut_IPCC_terms <- function(f, term, v, pth) {
-
-	  new_name <- basename(f) %>%
-	    change_grid_code(., paste0("_", term[3], "_")) %>% 
-	    paste0(pth, "/", .)
-
-	  n1 <- basename(new_name) %>% 
-	    str_split("_", simplify = TRUE) %>% 
-	    as.vector()
-	  n2 <- n1
-	  n2[7] <- paste0(term[1], "01", "-", term[2], "12") 
-	  out_name <- paste(n2, collapse = "_") %>%
-	    paste0(pth, "/", .)
-
-	  cdo_script <- paste0("cdo -s -L -f nc4 ",
-	                       "-selyear,", paste0(term[1], "/", term[2]), " ",
-	                       "-selvar,", v, " ", f, " ", out_name, ".nc")
-	  system(cdo_script)
-	}
-
 
 
 # Merge netCDFs from the same model and scenario -------------------------------
