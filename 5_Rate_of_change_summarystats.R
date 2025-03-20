@@ -30,7 +30,7 @@
   
   
 # Create plotting dfs ----------------------------------------------------------
-
+  
   get_dat <- function(f) {
     out <- rast(f)
     ssp <- str_split_i(basename(f), "_", 4)
@@ -79,17 +79,16 @@
                        Q05 = quantile(!!sym(m), .05, na.rm = TRUE),
                        Q95 = quantile(!!sym(m), .95, na.rm = TRUE),
                        Min = min(!!sym(m), na.rm = TRUE),
-                       Max = max(!!sym(m), na.rm = TRUE)) #%>% 
-      # mutate(Term = factor(Term, levels = o)) %>% 
-      # arrange(Term)
+                       Max = max(!!sym(m), na.rm = TRUE))
   }
-  files <- dir(plotdf_fol, full.names = TRUE, pattern = "decadal") # Use plotting DFs created above
+  
+  files <- dir(plotdf_fol, full.names = TRUE, pattern = "decadal")
   files
   df <- map(files, summarise_ROC) %>% 
-    bind_rows() %>%   # Bind into a tibble with all summary stats as columns (median, Q1, Q3, Q05, Q95)
+    bind_rows() %>% 
     mutate(Term = factor(Term, levels = c("recent-term", "near-term", "mid-term", "intermediate-term", "long-term"))) %>% 
     arrange(Term)
   df
-  saveRDS(df, paste0(plotdf_fol, "/", var_nm, "_summarystats_for_plotting.RDA"))
+  saveRDS(df, paste0(plotdf_fol, "/", var_nm, "_summary_stats_for_plotting.RDA"))
   
   
