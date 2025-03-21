@@ -1,4 +1,4 @@
-# Compute breaks for the threat layers, and for climate refugia
+# Compute rate of change breaks for the threat layers, and for climate refugia
   # Written by Alice Pidd (alicempidd@gmail.com) and David Schoeman (david.schoeman@gmail.com)
 	# June 2023
 

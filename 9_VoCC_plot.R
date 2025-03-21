@@ -12,21 +12,17 @@
   
   
 
-# Variable name ----------------------------------------------------------------
+# Metric -----------------------------------------------------------------------
   
-  #**Change for each variable*
-  var_nm <- tos  
-  # var_nm <- ph[1]  
-  # var_nm <- o2[1] 
-  # var_nm <- mhwROC[1]  
-
+  var_nm <- VoCC
+  
   
   
 # Folders and background data --------------------------------------------------
   
-  infol <- make_folder(source_disk, "ROC", var_nm[1], "threat_layers1") # Raster stacks per SSP
-  metricplots_fol <- make_folder(dest_disk, "ROC", var_nm[1], "plots_metric1")
-  refplots_fol <- make_folder(dest_disk, "ROC", var_nm[1], "plots_refugia1") # Where refugia plots will go
+  infol <- make_folder(source_disk, "VoCC", var_nm[1], "threat_layers1") # Raster stacks per SSP
+  metricplots_fol <- make_folder(dest_disk, "VoCC", var_nm[1], "plots_metric1")
+  refplots_fol <- make_folder(dest_disk, "VoCC", var_nm[1], "plots_refugia1") # Where refugia plots will go
   
   
   
@@ -34,32 +30,25 @@
   
   per <- 0.3
   
-  eez_stack <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_eez_stack.RDA"))
-  mpa_stack <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_mpa_stack.RDA"))
-  mpaoutside_stack <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_outsidempa_stack.RDA"))
+  eez_stack <- readRDS(paste0(infol, "/", var_nm[1], "_eez_stack.RDA"))
+  mpa_stack <- readRDS(paste0(infol, "/", var_nm[1], "_mpa_stack.RDA"))
+  mpaoutside_stack <- readRDS(paste0(infol, "/", var_nm[1], "_outsidempa_stack.RDA"))
   
-  brks_mpa <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_mpa_breaks.RDA"))
-  brks_eez <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_eez_breaks.RDA"))
-  brks_mpaoutside <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_outsidempa_breaks.RDA"))
+  brks_eez <- readRDS(paste0(infol, "/", var_nm[1], "_eez_breaks.RDA"))
+  brks_mpa <- readRDS(paste0(infol, "/", var_nm[1], "_mpa_breaks.RDA"))
+  brks_mpaoutside <- readRDS(paste0(infol, "/", var_nm[1], "_outsidempa_breaks.RDA"))
 
-  brksREF_mpa <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_REFmpa_breaks_", per*100, "per.RDA"))
-  brksREF_eez <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_REFeez_breaks_", per*100, "per.RDA"))
-  brksREF_mpaoutside <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_REFoutsidempa_breaks_", per*100, "per.RDA"))
+  brksREF_eez <- readRDS(paste0(infol, "/", var_nm[1], "_eez_refugia_breaks_", per*100, "per.RDA"))
+  brksREF_mpa <- readRDS(paste0(infol, "/", var_nm[1], "_mpa_refugia_breaks_", per*100, "per.RDA"))
+  brksREF_mpaoutside <- readRDS(paste0(infol, "/", var_nm[1], "_outsidempa_refugia_breaks_", per*100, "per.RDA"))
   
   
   
 # Plot metric and save ---------------------------------------------------------
   
-  ## Specify palette direction depending on variable -------
+  col_pal <- rev(RColorBrewer::brewer.pal("RdBu", n = 11))
   
-    if(var_nm[1] == "tos") {
-      col_pal <- rev(RColorBrewer::brewer.pal("RdBu", n = 11)) # For positive direction (tos)
-    } else {
-      col_pal <- RColorBrewer::brewer.pal("RdBu", n = 11) # For negative variables (o2, pH)
-    }
-    col_pal
-  
-
+    
   ## Plot  -------
     
     plot_metric <- function(x, region, region_nm, brks, pal) {
@@ -84,36 +73,17 @@
     }
     
     map(eez_stack, ~ plot_metric(.x, eez, "eez", brks_eez, col_pal)) 
-    map(mpa_stack, ~ plot_metric(.x, MPA_shp, "mpa", brks_mpa, col_pal))
-    map(mpaoutside_stack, ~ plot_metric(.x, MPA_shp, "mpa", brks_mpa, col_pal))
+    map(mpa_stack, ~ plot_metric(.x, MPA_shp, "mpas", brks_mpa, col_pal))
+    map(mpaoutside_stack, ~ plot_metric(.x, outsideMPA_shp, "outsidempas", brks_mpa, col_pal))
   
   
   
 # Plot refugia and save ---------------------------------------------------------
   
-  ## Specify legend labels and palettes per variable -------
+  e_pal <- c("#EA7A0B", "#EBB65C")
+  m_pal <- c("#086788", "#A0DAE4")
   
-    if(var_nm[1] == "tos") {
-      legend_labs <- c(paste0("Refugia (> ", per*100, "% change)"),
-                       paste0("Non-refugia (≤ ", per*100, "% change)")) # For positive direction (tos)
-    } else {
-      legend_labs <- c(paste0("Non-refugia (> ", per*100, "% change)"),
-                       paste0("Refugia (≤ ", per*100, "% change)")) # For negative variables (o2, pH)
-    }
-    legend_labs
-    
-    
-    if(var_nm[1] == "tos") {
-      e_pal <- c("#EA7A0B", "#EBB65C")  # In a positive direction (tos only)
-      m_pal <- c("#086788", "#A0DAE4")  # In a positive direction (tos only)
-    } else {
-      e_pal <- c("#EBB65C", "#EA7A0B") # In a negative direction (ph, o2)
-      m_pal <- c("#A0DAE4", "#086788") # In a negative direction (ph, o2)  
-    }
-    e_pal
-    m_pal
-  
-  
+
   ## Plot -------
     
     plotref_dif <- function(m, e) {
@@ -121,12 +91,13 @@
       x_masked_mpa <- terra::mask(m, MPA_shp)
       
       n_layers_eez <- nlayers(e)
-      x_masked_eez <- terra::mask(e, outsideMPAs) 
+      x_masked_eez <- terra::mask(e, outsideMPA_shp) 
       
       p_eez <- tm_shape(e) +
         tm_raster(palette = e_pal,
                   breaks = brksREF_mpaoutside[[1]],
-                  labels = legend_labs) +
+                  labels = c(paste0("Refugia (> ", per*100, "% change)"),
+                             paste0("Non-refugia (≤ ", per*100, "% change)"))) +
         tm_shape(oceaniaAsia) +
         tm_fill("grey60") +
         tm_shape(eez) +
@@ -137,7 +108,8 @@
         tm_shape(m) +
         tm_raster(palette = m_pal,
                   breaks = brksREF_mpa[[1]],
-                  labels = legend_labs) +
+                  labels = c(paste0("Refugia (> ", per*100, "% change)"),
+                             paste0("Non-refugia (≤ ", per*100, "% change)"))) +
         tm_shape(oceaniaAsia) +
         tm_fill("grey60") +
         tm_shape(eez) +

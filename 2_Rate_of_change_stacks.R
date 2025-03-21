@@ -32,7 +32,7 @@
 # Create rasterstack of threat layers ------------------------------------------
   
   do_threat_stack <- function(pth, mask) {
-    dir_files <- dir(pth, full.names = TRUE)
+    dir_files <- dir(infol, full.names = TRUE)
   
     rasters <- lapply(dir_files, function(file) {
       r <- rast(file) 
@@ -78,26 +78,25 @@
     
 # Get recent-term data ---------------------------------------------------------
 
-    ## For EEZ, including all MPAs ----
     recent_dat <- dir(infol, full.names = TRUE, pattern = "recent") # Get only recent term data
+    
+  ## For EEZ, including all MPAs ----
     recent_rast <- stack(recent_dat) # Stack it into a rasterstack
-      saveRDS(recent_rast, paste0(outfol, "/", var_nm, "_ROC_recent-term_eez_stack.RDA")) # Save them
+    saveRDS(recent_rast, paste0(outfol, "/", var_nm, "_ROC_recent-term_eez_stack.RDA")) # Save them
     recent_df <- as.data.frame(recent_rast) # Make a df
       saveRDS(recent_df, paste0(outfol, "/", var_nm, "_ROC_recent-term_eez_df.RDA"))
-
+  
   ## For MPAs only ----
-    recent_dat <- dir(infol, full.names = TRUE, pattern = "recent") # Get only recent term data
     recentrast <- stack(recent_dat) %>% # Stack it into a rasterstack
       mask(., MPA_shp) # Mask to MPAs
-      saveRDS(recent_rast, paste0(outfol, "/", var_nm, "_ROC_recent-term_mpa_stack.RDA")) # Save them
+    saveRDS(recent_rast, paste0(outfol, "/", var_nm, "_ROC_recent-term_mpa_stack.RDA")) # Save them
     recent_df <- as.data.frame(recent_rast) # Make a df
       saveRDS(recent_df, paste0(outfol, "/", var_nm, "_ROC_recent-term_mpa_df.RDA"))
-
+  
   ## For area within the EEZ, but outside of MPAs ----
-    recent_dat <- dir(infol, full.names = TRUE, pattern = "recent") # Get only recent term data
-      recent_rast <- stack(recent_dat) %>% # Stack it into a rasterstack
+    recent_rast <- stack(recent_dat) %>% # Stack it into a rasterstack
       mask(., outsideMPAs) # Mask to outside MPAs
-      saveRDS(recent_rast, paste0(outfol, "/", var_nm, "_ROC_recent-term_outsidempa_stack.RDA")) # Save them
+    saveRDS(recent_rast, paste0(outfol, "/", var_nm, "_ROC_recent-term_outsidempa_stack.RDA")) # Save them
     recent_df <- as.data.frame(recent_rast) # Make a df
       saveRDS(recent_df, paste0(outfol, "/", var_nm, "_ROC_recent-term_outsidempa_df.RDA"))
 

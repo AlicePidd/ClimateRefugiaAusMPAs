@@ -24,81 +24,107 @@
   crop_fol <- make_folder(source_disk, "VoCC", var_nm, "calc_cropped") 
   outfol <- make_folder(source_disk, "VoCC", var_nm, "threat_layers1") # Raster stacks per SSP
   
-
-
-# Folders ----------------------------------------------------------------------
-  gVoCC_folder <- make_CMIP_folder("gVoCC_folder", "13_VoCC_gVoCC", source_disk, metric, met_ttl)
-  data_folder <- make_CMIP_folder("croppedVoCC_folder", "13_VoCC_gVoCCcropped", source_disk, metric, met_ttl)
-  workingdata_folder <- make_CMIP_folder("threatlayer_folder", "threat_layers", source_disk, metric, met_ttl)
   
   
 # Crop to study region ---------------------------------------------------------
   
-  files <- dir(gVoCC_folder, full.names = TRUE)
-  f <- files[1]
+  files <- dir(infol, full.names = TRUE)
 
-    crop_to_ext <- function(f) {
-      e <- ext(e1) # Specify extent to crop to
-      r <- readRDS(f) 
-      r <- crop(r, e) * 10      #** Decadal **
-      nm <- basename(f) %>% 
-        str_replace(., "rg", "cropped")
-    
-      saveRDS(r, paste0(data_folder, "/", nm))
-    }
+  crop_to_ext <- function(f) {
+    r <- readRDS(f) 
+    r <- crop(r, e1) #* 10      #** Decadal **
+    nm <- basename(f) %>% 
+      str_replace(., "rg", "cropped") %>% 
+      str_replace(., "Operiod", "decadal")
+    saveRDS(r, paste0(crop_fol, "/", nm))
+  }
+  walk(files, crop_to_ext)
 
-    walk(files, crop_to_ext)
-
+  
 
 # Create rasterstack of threat layers ------------------------------------------
-  # Create the threat stacks -----
-  do_threat_stack <- function(dir_path, base_rastermask) {
-    dir_files <- dir(data_folder, full.names = TRUE)
+  
+  do_threat_stack <- function(pth, mask) {
+    dir_files <- dir(pth, full.names = TRUE)
     
-    process_raster <- function(f) {
-      r <- readRDS(f) 
-      voccMag <- r[[1]] # Get the first layer
-      voccMag_rast <- as(voccMag, "SpatRaster") # Convert to SpatRaster
-      resampled_rast <- terra::resample(voccMag, base_rastermask)  # Resample to match base_rastermask
-      return(resampled_rast)
-    }
-
-    resampled_rasters <- lapply(dir_files, process_raster) # Do the resample function to all files
-    threat_rast <- rast(resampled_rasters) # Make them spatrasters again
-    threat_stack <- terra::mask(threat_rast, base_rastermask) # Mask them to whatever the mask is we specify
+    rasters <- lapply(dir_files, function(file) {
+      r <- rast(file) 
+      voccMag <- r[[1]]
+    })
     
-    names(threat_stack) <- basename(dir_files) # Keep filenames or they'll be "layer 1, layer 2, ..."
-    subset_threatstack <- function(ssp){ # Subset the raster stack by each SSP.
+    threat_rast <- rast(rasters)
+    threat_masked <- terra::mask(threat_rast, mask) 
+    threat_stack <- stack(threat_masked)
+    
+    names(threat_stack) <- basename(dir_files) 
+    subset_threatstack <- function(ssp){ 
       r_sub <- raster::subset(threat_stack, grep(ssp, names(threat_stack)))
-      nm_order <- map(stack_order, ~grep(.x, names(r_sub))) %>% # Reorder the terms per the stack_order
+      nm_order <- map(stack_order, ~grep(.x, names(r_sub))) %>% 
         unlist() 
       r_fin <- r_sub[[nm_order]]
       return(r_fin)
     }
-    out <- map(ssp_num, ~ subset_threatstack(.x)) # Do the function to each subset per each ssp_num
-    out_stack <- rast(out)  # Convert the list of rasters to a single SpatRaster stack
-    out_df <- terra::as.data.frame(out_stack, xy = TRUE, long = TRUE)
-    
-    return(list(rast = out_stack, df = out_df))
+    out <- map(ssp_num, ~ subset_threatstack(.x)) 
+    out_df <- as.data.frame(stack(out))
+    return(list(rast = out, df = out_df))
   }
-
-
-# Do the thing:-----------------------------------------------------------------
-  ## For MPAs ----
-  outmpalist <- do_threat_stack(workingdata_folder, rmpa) # Save the data as a list in the working data folder
-  #   # For IPCC cut ens-trends
-    saveRDS(outmpalist$df, paste0(workingdata_folder, "/", met_ttl, "_", metric, "_METRICmpa", "_df.RDA")) # save the df as an RDA file
-    saveRDS(outmpalist$rast, paste0(workingdata_folder, "/", met_ttl, "_", metric, "_METRICmpa", "_stack.RDA")) # save the rasterstack
-
-  ## For entire EEZ ----
-  outeez_list <- do_threat_stack(workingdata_folder, reez) # Saves the data as a list in the working data folder
-  #   # For IPCC cut ens-trends
-    saveRDS(outeez_list$df, paste0(workingdata_folder, "/", met_ttl, "_", metric, "_METRICeez", "_df.RDA")) # save the df as an RDA file
-    saveRDS(outeez_list$rast, paste0(workingdata_folder, "/", met_ttl, "_", metric, "_METRICeez", "_stack.RDA")) # save the rasterstack
-
-  ## For outside of MPAs ----
-  outmpalist <- do_threat_stack(workingdata_folder, routsidempa) # Save the data as a list in the working data folder
-  #   # For IPCC cut ens-trends
-    saveRDS(outmpalist$df, paste0(workingdata_folder, "/", met_ttl, "_", metric, "_METRICmpaoutside", "_df.RDA")) # save the df as an RDA file
-    saveRDS(outmpalist$rast, paste0(workingdata_folder, "/", met_ttl, "_", metric, "_METRICmpaoutside", "_stack.RDA")) # save the rasterstack
   
+
+  
+# Do ---------------------------------------------------------------------------
+
+  ## For EEZ, including all MPAs ----
+  
+  eez_list <- do_threat_stack(crop_fol, reez) 
+    saveRDS(eez_list$df, paste0(outfol, "/", var_nm, "_eez_df.RDA"))
+    saveRDS(eez_list$rast, paste0(outfol, "/", var_nm, "_eez_stack.RDA")) 
+  
+    
+  ## For MPAs only ----
+    
+  mpa_list <- do_threat_stack(crop_fol, rmpa)
+    saveRDS(mpa_list$df, paste0(outfol, "/", var_nm, "_mpa_df.RDA"))
+    saveRDS(mpa_list$rast, paste0(outfol, "/", var_nm, "_mpa_stack.RDA")) 
+  
+    
+  ## For area within the EEZ, but outside of MPAs ----
+    
+  outmpa_list <- do_threat_stack(crop_fol, routsidempa) 
+    saveRDS(outmpa_list$df, paste0(outfol, "/", var_nm, "_outsidempa_df.RDA")) 
+    saveRDS(outmpa_list$rast, paste0(outfol, "/", var_nm, "_outsidempa_stack.RDA")) 
+
+  
+
+# Get recent-term data ---------------------------------------------------------
+
+  recent_dat <- dir(crop_fol, full.names = TRUE, pattern = "recent")[1]
+  rt <- readRDS(recent_dat) 
+  rt <- rt[[1]]
+  names(rt) <- "VoCCMag_recent-past"
+
+    
+  ## For EEZ, including all MPAs ----
+    
+    r <- rt %>% 
+      mask(., eez)
+      saveRDS(r, paste0(outfol, "/", var_nm, "_eez_recent-term_stack.RDA")) 
+    recent_df <- as.data.frame(r)
+      saveRDS(recent_df, paste0(outfol, "/", var_nm, "_eez_recent-term_df.RDA"))
+  
+      
+  ## For MPAs only ----
+      
+    r <- rt %>% 
+      mask(., MPA_shp) 
+      saveRDS(r, paste0(outfol, "/", var_nm, "_mpa_recent-term_stack.RDA"))
+    recent_df <- as.data.frame(r) 
+      saveRDS(recent_df, paste0(outfol, "/", var_nm, "_mpa_recent-term_df.RDA"))
+  
+      
+  ## For area within the EEZ, but outside of MPAs ----
+      
+    r <- rt %>% 
+      mask(., outsideMPAs) 
+      saveRDS(r, paste0(outfol, "/", var_nm, "_outsidempa_recent-term_stack.RDA"))
+    recent_df <- as.data.frame(r) 
+      saveRDS(recent_df, paste0(outfol, "/", var_nm, "_outsidempa_recent-term_df.RDA"))
