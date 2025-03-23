@@ -29,7 +29,7 @@ ClimateRefugiaAusMPAs
 
 ## Workflow
 
-Earth System Model (ESM) outputs used in this study and the associated code were obtained from publicly available data nodes via the Earth System Grid Federation MetaGrid (<https://esgf.nci.org.au/search>). Workflow for downloading, wrangling, and processing ESMs can be followed in the <i>hotrstuff</i> package and GitHub repo (Buenafe, Schoeman, & Everett 2024) at <https://github.com/SnBuenafe/hotrstuff> .
+Earth System Model (ESM) outputs used in this study and the associated code were obtained from publicly available data nodes via the Earth System Grid Federation MetaGrid (<https://esgf.nci.org.au/search>). Workflow for downloading, wrangling, and processing ESMs can be followed in the `hotrstuff` package and GitHub repo (Buenafe, Schoeman, & Everett 2024) at <https://github.com/SnBuenafe/hotrstuff> .
 
 In addition to data preparation scripts relevant to the case study region (here, continental Australia), this repo includes general code for computing and plotting the following metrics of marine climate exposure:
 
@@ -37,6 +37,8 @@ In addition to data preparation scripts relevant to the case study region (here,
 -   Gradient-based thermal climate velocity
 -   Marine heatwave cumulative intensity
 -   Identifying climate refugia based on pre-determined thresholds of climate exposure
+
+This workflow follows numbered scripts for each metric. Workflow for the rates of change (`ROC`) metric follows a `calc`, `stack`, `breaks`, `plot`, `summary stats`, `binomial refugia` order. These scripts involve a `calc` step as this metric was computed on raw ocean climate variables (SST, o2, pH), whereas climate velocity (`VoCC`) and cumulative intensity of marine heatwaves (`MHW-CumInt)` were computed using existing R packages. The rate of change in MHWs (`MHW-ROC)` were computed with a `calc` step, as with the other `ROC` variables.
 
 ## Machine specifications
 

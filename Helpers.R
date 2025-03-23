@@ -91,7 +91,7 @@ make_folder <- function(d, m, v, fol_dir_name) {
   	o2 <- c("o2", "dissolved oxygen concentration (units)", "(units)")
   	ph <- c("ph", "pH (mol H Kg¯¹)", "(mol H Kg¯¹)")
   	VoCC <- c("VoCCMag", "Gradient-based climate velocity (km/decade)", "(km/decade)")
-  	mhw <- c("MHW_CumInt", "Marine heatwave cumulative intensity", "(degree days)")
+  	mhw <- c("MHW-CumInt", "Marine heatwave cumulative intensity", "(degree days)")
   	mhwROC <- c("MHW-ROC", "Rate of change in marine heatwave cumulative intensity", "(degree days / decade")
   	
   	
@@ -267,7 +267,7 @@ make_folder <- function(d, m, v, fol_dir_name) {
 # Cut dates to date range ------------------------------------------------------
 	
 	cut_dates <- function(f, start_date, end_date, v, start_dt_name, outfol) { 
-	  bits <- get_CMIP6_bits_dave(f) 
+	  bits <- get_CMIP6_bits(f) 
 	  pat <- paste0(str_replace_all(substr(bits$Year_start, 1, 7), "-", ""))
 	  new_name <- str_replace_all(basename(f), fixed(pat), start_dt_name)
 	  
@@ -490,7 +490,7 @@ make_folder <- function(d, m, v, fol_dir_name) {
 	
 	change_grid_code <- function(f, pattern) {
 	 file <- basename(f)
-	 find <- paste0("_", get_CMIP6_bits_dave(file)$Grid, "_")
+	 find <- paste0("_", get_CMIP6_bits(file)$Grid, "_")
 	 replacement <- pattern
 	 return(str_replace_all(file, find, replacement))
 	}
@@ -502,7 +502,7 @@ make_folder <- function(d, m, v, fol_dir_name) {
 	
 	change_year_code <- function(f, pattern) {
 	  file <- basename(f) # had to add this as get_CMIP6_bits was creating bits based on the entire path and filename
-	  find <- paste0("_", get_CMIP6_bits_dave(file)$Year_start, "_")
+	  find <- paste0("_", get_CMIP6_bits(file)$Year_start, "_")
 	  replacement <- pattern
 	  return(str_replace_all(file, find, replacement))
 	}
@@ -517,10 +517,10 @@ make_folder <- function(d, m, v, fol_dir_name) {
 	  files <- dir(infold, pattern = model)
 	  files <- files[grepl(scenario, files)]
 	  
-	  y1 <- get_CMIP6_bits_dave(files[1])$Year_start %>%
+	  y1 <- get_CMIP6_bits(files[1])$Year_start %>%
 	    as.character() %>%
 	    gsub("-", "", .)
-	  y2 <- get_CMIP6_bits_dave(files[length(files)])$Year_end %>%
+	  y2 <- get_CMIP6_bits(files[length(files)])$Year_end %>%
 	    as.character() %>%
 	    gsub("-", "", .)
 	  
@@ -544,10 +544,10 @@ make_folder <- function(d, m, v, fol_dir_name) {
 	  files <- dir(infold, pattern = model)
 	  model_files <- files[grepl(model, files)]
 
-	  y1 <- get_CMIP6_bits_dave(model_files[1])$Year_start %>%
+	  y1 <- get_CMIP6_bits(model_files[1])$Year_start %>%
 	    as.character() %>%
 	    gsub("-", "", .)
-	  y2 <- get_CMIP6_bits_dave(model_files[length(model_files)])$Year_end %>%
+	  y2 <- get_CMIP6_bits(model_files[length(model_files)])$Year_end %>%
 	    as.character() %>%
 	    gsub("-", "", .)
 	  

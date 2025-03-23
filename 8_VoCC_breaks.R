@@ -80,26 +80,26 @@
     return(brks)
   }
     
-  per <- 0.3    #**Percentage of the present day data we want to classify as refugia**
+  per <- 0.3     #**Percentage of the recent-term data we want to classify as refugia**
 
   
   ## For entire EEZ ----
   
-    recent_dfeez <- readRDS(paste0(infol, "/", var_nm, "_recent-term_eez_df.RDA")) 
+    recent_dfeez <- readRDS(paste0(infol, "/", var_nm, "_eez_recent-term_df.RDA")) 
     brks_recent_eez <- get_recentterm_brks(recent_dfeez, per) 
       saveRDS(brks_recent_eez, paste0(infol, "/", var_nm, "_eez_refugia_breaks_", per*100, "per.RDA")) 
 
     
   ## For MPAs ----
     
-    recent_dfmpa <- readRDS(paste0(infol, "/", var_nm, "_recent-term_mpa_df.RDA")) 
+    recent_dfmpa <- readRDS(paste0(infol, "/", var_nm, "_mpa_recent-term_df.RDA")) 
     brks_recent_mpa <- get_recentterm_brks(recent_dfmpa, per)
       saveRDS(brks_recent_mpa, paste0(infol, "/", var_nm, "_mpa_refugia_breaks_", per*100, "per.RDA")) 
 
     
   ## For outside MPAs ----
     
-    recent_dfoutmpa <- readRDS(paste0(infol, "/", var_nm, "_recent-term_outsidempa_df.RDA")) 
+    recent_dfoutmpa <- readRDS(paste0(infol, "/", var_nm, "_outsidempa_recent-term_df.RDA")) 
     brks_recent_outmpa <- get_recentterm_brks(recent_dfoutmpa, per)
       saveRDS(brks_recent_outmpa, paste0(infol, "/", var_nm, "_outsidempa_refugia_breaks_", per*100, "per.RDA")) 
   

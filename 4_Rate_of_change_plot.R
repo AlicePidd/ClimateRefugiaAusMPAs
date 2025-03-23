@@ -38,13 +38,13 @@
   mpa_stack <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_mpa_stack.RDA"))
   mpaoutside_stack <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_outsidempa_stack.RDA"))
   
-  brks_mpa <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_mpa_breaks.RDA"))
   brks_eez <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_eez_breaks.RDA"))
+  brks_mpa <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_mpa_breaks.RDA"))
   brks_mpaoutside <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_outsidempa_breaks.RDA"))
 
-  brksREF_mpa <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_REFmpa_breaks_", per*100, "per.RDA"))
-  brksREF_eez <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_REFeez_breaks_", per*100, "per.RDA"))
-  brksREF_mpaoutside <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_REFoutsidempa_breaks_", per*100, "per.RDA"))
+  brksREF_eez <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_eez_refugia_breaks_", per*100, "per.RDA"))
+  brksREF_mpa <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_mpa_refugia_breaks_", per*100, "per.RDA"))
+  brksREF_mpaoutside <- readRDS(paste0(infol, "/", var_nm[1], "_ROC_outsidempa_refugia_breaks_", per*100, "per.RDA"))
   
   
   

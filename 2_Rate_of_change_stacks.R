@@ -24,15 +24,15 @@
   
 # Folders ----------------------------------------------------------------------
   
-  infol <- make_folder(source_disk, "ROC", var_nm, "calc") # ROC calc files for each reporting period
-  outfol <- make_folder(source_disk, "ROC", var_nm, "threat_layers") # Raster stacks per SSP
+  infol <- make_folder(source_disk, "ROC", var_nm, "calc1") 
+  outfol <- make_folder(source_disk, "ROC", var_nm, "threat_layers1") 
   
   
   
 # Create rasterstack of threat layers ------------------------------------------
   
   do_threat_stack <- function(pth, mask) {
-    dir_files <- dir(infol, full.names = TRUE)
+    dir_files <- dir(pth, full.names = TRUE)
   
     rasters <- lapply(dir_files, function(file) {
       r <- rast(file) 
@@ -43,9 +43,9 @@
     threat_stack <- stack(threat_masked)
   
     names(threat_stack) <- basename(dir_files) 
-    subset_threatstack <- function(ssp){ # Subset the raster stack by each SSP
+    subset_threatstack <- function(ssp){ 
       r_sub <- raster::subset(threat_stack, grep(ssp, names(threat_stack)))
-      nm_order <- map(stack_order, ~grep(.x, names(r_sub))) %>% # Reorder the terms
+      nm_order <- map(stack_order, ~grep(.x, names(r_sub))) %>% 
         unlist() 
       r_fin <- r_sub[[nm_order]]
       return(r_fin)
@@ -60,43 +60,55 @@
 # Do ---------------------------------------------------------------------------
   
   ## For EEZ, including all MPAs ----
-  eez_list <- do_threat_stack(infol, reez) # Saves the data as a list in the working data folder
-    saveRDS(eez_list$df, paste0(outfol, "/", var_nm, "_ROC_eez_df.RDA")) # save the df as an RDA file
-    saveRDS(eez_list$rast, paste0(outfol, "/", var_nm, "_ROC_eez_stack.RDA")) # save the rasterstack
+  
+  eez_list <- do_threat_stack(infol, reez) 
+    saveRDS(eez_list$df, paste0(outfol, "/", var_nm, "_ROC_eez_df.RDA")) 
+    saveRDS(eez_list$rast, paste0(outfol, "/", var_nm, "_ROC_eez_stack.RDA")) 
 
+    
   ## For MPAs only ----
-  mpa_list <- do_threat_stack(infol, rmpa) # Save the data as a list in the working data folder
-    saveRDS(mpa_list$df, paste0(outfol, "/", var_nm, "_ROC_mpa_df.RDA")) # save the df as an RDA file
-    saveRDS(mpa_list$rast, paste0(outfol, "/", var_nm, "_ROC_mpa_stack.RDA")) # save the rasterstack
+    
+  mpa_list <- do_threat_stack(infol, rmpa) 
+    saveRDS(mpa_list$df, paste0(outfol, "/", var_nm, "_ROC_mpa_df.RDA")) 
+    saveRDS(mpa_list$rast, paste0(outfol, "/", var_nm, "_ROC_mpa_stack.RDA")) 
 
+    
   ## For area within the EEZ, but outside of MPAs ----
-  outmpa_list <- do_threat_stack(infol, routsidempa) # Save the data as a list in the working data folder
-    saveRDS(outmpa_list$df, paste0(outfol, "/", var_nm, "_ROC_outsidempa_df.RDA")) # save the df as an RDA file
-    saveRDS(outmpa_list$rast, paste0(outfol, "/", var_nm, "_ROC_outsidempa_stack.RDA")) # save the rasterstack
+    
+  outmpa_list <- do_threat_stack(infol, routsidempa) 
+    saveRDS(outmpa_list$df, paste0(outfol, "/", var_nm, "_ROC_outsidempa_df.RDA")) 
+    saveRDS(outmpa_list$rast, paste0(outfol, "/", var_nm, "_ROC_outsidempa_stack.RDA")) 
     
     
     
 # Get recent-term data ---------------------------------------------------------
 
-    recent_dat <- dir(infol, full.names = TRUE, pattern = "recent") # Get only recent term data
+    recent_dat <- dir(infol, full.names = TRUE, pattern = "recent") 
+    
     
   ## For EEZ, including all MPAs ----
-    recent_rast <- stack(recent_dat) # Stack it into a rasterstack
-    saveRDS(recent_rast, paste0(outfol, "/", var_nm, "_ROC_recent-term_eez_stack.RDA")) # Save them
-    recent_df <- as.data.frame(recent_rast) # Make a df
-      saveRDS(recent_df, paste0(outfol, "/", var_nm, "_ROC_recent-term_eez_df.RDA"))
+    
+    recent_rast <- stack(recent_dat) %>% 
+      mask(., eez)
+    saveRDS(recent_rast, paste0(outfol, "/", var_nm, "_ROC_eez_recent-term_stack.RDA")) 
+    recent_df <- as.data.frame(recent_rast) 
+      saveRDS(recent_df, paste0(outfol, "/", var_nm, "_ROC_eez_recent-term_df.RDA"))
   
+      
   ## For MPAs only ----
-    recentrast <- stack(recent_dat) %>% # Stack it into a rasterstack
-      mask(., MPA_shp) # Mask to MPAs
-    saveRDS(recent_rast, paste0(outfol, "/", var_nm, "_ROC_recent-term_mpa_stack.RDA")) # Save them
-    recent_df <- as.data.frame(recent_rast) # Make a df
-      saveRDS(recent_df, paste0(outfol, "/", var_nm, "_ROC_recent-term_mpa_df.RDA"))
+      
+    recentrast <- stack(recent_dat) %>% 
+      mask(., MPA_shp) 
+    saveRDS(recent_rast, paste0(outfol, "/", var_nm, "_ROC_mpa_recent-term_stack.RDA")) 
+    recent_df <- as.data.frame(recent_rast) 
+      saveRDS(recent_df, paste0(outfol, "/", var_nm, "_ROC_mpa_recent-term_df.RDA"))
   
+      
   ## For area within the EEZ, but outside of MPAs ----
-    recent_rast <- stack(recent_dat) %>% # Stack it into a rasterstack
-      mask(., outsideMPAs) # Mask to outside MPAs
-    saveRDS(recent_rast, paste0(outfol, "/", var_nm, "_ROC_recent-term_outsidempa_stack.RDA")) # Save them
-    recent_df <- as.data.frame(recent_rast) # Make a df
-      saveRDS(recent_df, paste0(outfol, "/", var_nm, "_ROC_recent-term_outsidempa_df.RDA"))
+      
+    recent_rast <- stack(recent_dat) %>% 
+      mask(., outsideMPA_shp)
+    saveRDS(recent_rast, paste0(outfol, "/", var_nm, "_ROC_outsidempa_recent-term_stack.RDA")) 
+    recent_df <- as.data.frame(recent_rast) 
+      saveRDS(recent_df, paste0(outfol, "/", var_nm, "_ROC_outsidempa_recent-term_df.RDA"))
 

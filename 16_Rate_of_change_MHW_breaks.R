@@ -11,21 +11,17 @@
   
   
 
-# Variable name ----------------------------------------------------------------
+# Metric -----------------------------------------------------------------------
   
-  #**Change for each variable*
-  var_nm <- tos[1]  
-  # var_nm <- ph[1]  
-  # var_nm <- o2[1] 
-  # var_nm <- mhwROC[1]  
+  var_nm <- mhwROC[1]
   
   
   
 # Folders ----------------------------------------------------------------------
   
-  infol <- make_folder(source_disk, "ROC", var_nm, "threat_layers1")
-
+  infol <- make_folder(source_disk, "MHW", var_nm, "threat_layers1") # Raster stacks per SSP
   
+
 
 # Create breaks for each threat ------------------------------------------------
   
@@ -47,19 +43,24 @@
 
   
   ## For entire EEZ ----
-    eez_df <- readRDS(paste0(infol, "/", var_nm, "_ROC_eez_df.RDA")) 
+  
+    eez_df <- readRDS(paste0(infol, "/", var_nm, "_eez_df.RDA")) 
     brks_eez <- get_brks(eez_df) 
-    saveRDS(brks_eez, paste0(infol, "/", var_nm, "_ROC_eez_breaks.RDA"))
+    saveRDS(brks_eez, paste0(infol, "/", var_nm, "_eez_breaks.RDA"))
 
+    
   ## For MPAs ----
-    mpa_df <- readRDS(paste0(infol, "/", var_nm, "_ROC_mpa_df.RDA")) 
+    
+    mpa_df <- readRDS(paste0(infol, "/", var_nm, "_mpa_df.RDA")) 
     brks_mpa <- get_brks(mpa_df) 
-    saveRDS(brks_mpa, paste0(infol, "/", var_nm, "_ROC_mpa_breaks.RDA"))
+    saveRDS(brks_mpa, paste0(infol, "/", var_nm, "_mpa_breaks.RDA"))
 
+    
   ## For outside MPAs ----
-    outmpa_df <- readRDS(paste0(infol, "/", var_nm, "_ROC_outsidempa_df.RDA"))
+    
+    outmpa_df <- readRDS(paste0(infol, "/", var_nm, "_outsidempa_df.RDA"))
     brks_outmpa <- get_brks(outmpa_df) 
-    saveRDS(brks_outmpa, paste0(infol, "/", var_nm, "_ROC_outsidempa_breaks.RDA"))
+    saveRDS(brks_outmpa, paste0(infol, "/", var_nm, "_outsidempa_breaks.RDA"))
 
 
     
@@ -75,38 +76,33 @@
         as.vector() %>% 
         unlist() %>% 
         unname() %>% 
-        
-        ##** CHOOSE: *
-        quantile(., ref_per) %>%   # for tos
-        # quantile(., 1-(1-ref_per)) %>%  # for pH and o2 where non-refugia occur in a negative direction (decreasing)
-
+        quantile(., ref_per) %>%
         c(-Inf, ., Inf) 
     })
-    
     return(brks)
   }
   
-  per <- 0.3     #**Percentage of the recent-term data we want to classify as refugia**
-  
+  per <- 0.3    #**Percentage of the recent-term data we want to classify as refugia**
+
   
   ## For entire EEZ ----
   
-    recent_dfeez <- readRDS(paste0(infol, "/", var_nm, "_ROC_eez_recent-term_df.RDA")) 
+    recent_dfeez <- readRDS(paste0(infol, "/", var_nm, "_eez_recent-term_df.RDA")) 
     brks_recent_eez <- get_recentterm_brks(recent_dfeez, per) 
-      saveRDS(brks_recent_eez, paste0(infol, "/", var_nm, "_ROC_eez_refugia_breaks_", per*100, "per.RDA")) 
+      saveRDS(brks_recent_eez, paste0(infol, "/", var_nm, "_eez_refugia_breaks_", per*100, "per.RDA")) 
 
     
   ## For MPAs ----
     
-    recent_dfmpa <- readRDS(paste0(infol, "/", var_nm, "_ROC_mpa_recent-term_df.RDA")) 
+    recent_dfmpa <- readRDS(paste0(infol, "/", var_nm, "_mpa_recent-term_df.RDA")) 
     brks_recent_mpa <- get_recentterm_brks(recent_dfmpa, per)
-      saveRDS(brks_recent_mpa, paste0(infol, "/", var_nm, "_ROC_mpa_refugia_breaks_", per*100, "per.RDA")) 
+      saveRDS(brks_recent_mpa, paste0(infol, "/", var_nm, "_mpa_refugia_breaks_", per*100, "per.RDA")) 
 
     
   ## For outside MPAs ----
     
-    recent_dfoutmpa <- readRDS(paste0(infol, "/", var_nm, "_ROC_outsidempa_recent-term_df.RDA")) 
+    recent_dfoutmpa <- readRDS(paste0(infol, "/", var_nm, "_outsidempa_recent-term_df.RDA")) 
     brks_recent_outmpa <- get_recentterm_brks(recent_dfoutmpa, per)
-      saveRDS(brks_recent_outmpa, paste0(infol, "/", var_nm, "_ROC_outsidempa_refugia_breaks_", per*100, "per.RDA")) 
+      saveRDS(brks_recent_outmpa, paste0(infol, "/", var_nm, "_outsidempa_refugia_breaks_", per*100, "per.RDA")) 
   
   
