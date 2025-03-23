@@ -53,11 +53,12 @@
     
     plot_metric <- function(x, region, region_nm, brks, pal) {
       n_layers <- nlayers(x)
-      x_masked <- terra::mask(x, region) # Mask data to whole EEZ
+      xx <- clamp(x, lower = -50, upper = 150)
+      x_masked <- terra::mask(xx, region) # Mask data to whole EEZ
       
       p <- tm_shape(x_masked) + 
         tm_raster(palette = pal,
-                  breaks = brks,
+                  breaks = seq(-50, 150, 5),
                   midpoint = 0,
                   title = paste0("Rate of change in ", var_nm[1], " ", var_nm[3], " per decade")) +
         tm_shape(oceaniaAsia) +
@@ -80,8 +81,8 @@
   
 # Plot refugia and save ---------------------------------------------------------
   
-  e_pal <- c("#EA7A0B", "#EBB65C")
-  m_pal <- c("#086788", "#A0DAE4")
+  m_pal <- c("#EA7A0B", "#EBB65C")
+  e_pal <- c("#086788", "#A0DAE4")
   
 
   ## Plot -------
@@ -96,8 +97,8 @@
       p_eez <- tm_shape(e) +
         tm_raster(palette = e_pal,
                   breaks = brksREF_mpaoutside[[1]],
-                  labels = c(paste0("Refugia (> ", per*100, "% change)"),
-                             paste0("Non-refugia (≤ ", per*100, "% change)"))) +
+                  labels = c(paste0("Refugia (≤ ", per*100, "% change)"),
+                             paste0("Non-refugia (> ", per*100, "% change)"))) +
         tm_shape(oceaniaAsia) +
         tm_fill("grey60") +
         tm_shape(eez) +
@@ -108,8 +109,8 @@
         tm_shape(m) +
         tm_raster(palette = m_pal,
                   breaks = brksREF_mpa[[1]],
-                  labels = c(paste0("Refugia (> ", per*100, "% change)"),
-                             paste0("Non-refugia (≤ ", per*100, "% change)"))) +
+                  labels = c(paste0("Refugia (≤ ", per*100, "% change)"),
+                             paste0("Non-refugia (> ", per*100, "% change)"))) +
         tm_shape(oceaniaAsia) +
         tm_fill("grey60") +
         tm_shape(eez) +

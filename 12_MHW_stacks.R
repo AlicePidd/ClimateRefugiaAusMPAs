@@ -1,4 +1,4 @@
-# Stack climate velocity layers
+# Stack marine heatwave layers
   # Written by Alice Pidd (alicempidd@gmail.com) and David Schoeman (david.schoeman@gmail.com)
 	# June 2023
 

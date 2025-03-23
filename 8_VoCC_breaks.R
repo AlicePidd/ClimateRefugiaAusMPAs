@@ -25,7 +25,7 @@
 
 # Create breaks for each threat ------------------------------------------------
   
-  percentiles <- seq(0.1, 0.9, 0.025) # Breaks
+  percentiles <- seq(0.025, 0.975, 0.025) # Breaks
   
   get_brks <- function(df) { 
     output <- pivot_longer(df, everything(), 
