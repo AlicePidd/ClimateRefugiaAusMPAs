@@ -121,7 +121,7 @@
       x_masked_mpa <- terra::mask(m, MPA_shp)
       
       n_layers_eez <- nlayers(e)
-      x_masked_eez <- terra::mask(e, outsideMPAs) 
+      x_masked_eez <- terra::mask(e, outsideMPA_shp) 
       
       p_eez <- tm_shape(e) +
         tm_raster(palette = e_pal,

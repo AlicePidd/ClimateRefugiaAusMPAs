@@ -19,7 +19,7 @@
   
 # Folders ----------------------------------------------------------------------
   
-  infol <- make_folder(source_disk, "MHW", var_nm, "threat_layers1") # Raster stacks per SSP
+  infol <- make_folder(source_disk, "MHW", var_nm, "threat_layers1") 
 
   
 

@@ -10,6 +10,7 @@
   dest_disk <- "/Volumes/AliceShield/clim_data" # Where files are written to
   
 
+  
 # Variable name ----------------------------------------------------------------
   
   #**Change for each variable*

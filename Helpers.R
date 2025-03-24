@@ -92,7 +92,7 @@ make_folder <- function(d, m, v, fol_dir_name) {
   	ph <- c("ph", "pH (mol H Kg¯¹)", "(mol H Kg¯¹)")
   	VoCC <- c("VoCCMag", "Gradient-based climate velocity (km/decade)", "(km/decade)")
   	mhw <- c("MHW-CumInt", "Marine heatwave cumulative intensity", "(degree days)")
-  	mhwROC <- c("MHW-ROC", "Rate of change in marine heatwave cumulative intensity", "(degree days / decade")
+  	mhwROC <- c("MHW-ROC", "Rate of change in the cumulative intensity of marine heatwaves", "(degree days / decade)")
   	
   	
   	

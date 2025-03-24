@@ -7,7 +7,7 @@
 # Source the helpers and necessary bits -----------------------------------------------------------
 
   source("Helpers.R")
-  disk <- "/Users/alicepidd/Documents/PhD/code/ClimateRefugiaAusMPAs/masks"
+  disk <- "/Volumes/AliceShield/clim_data/masks"
   
   
   

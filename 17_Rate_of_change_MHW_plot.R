@@ -11,18 +11,18 @@
   source("Background_plotting_data.R")
   
   
-
+  
 # Metric -----------------------------------------------------------------------
   
-  var_nm <- VoCC
-  
+  var_nm <- mhwROC[1]
+
   
   
 # Folders and background data --------------------------------------------------
   
-  infol <- make_folder(source_disk, "VoCC", var_nm[1], "threat_layers1") # Raster stacks per SSP
-  metricplots_fol <- make_folder(dest_disk, "VoCC", var_nm[1], "plots_metric1")
-  refplots_fol <- make_folder(dest_disk, "VoCC", var_nm[1], "plots_refugia1") # Where refugia plots will go
+  infol <- make_folder(source_disk, "MHW", var_nm[1], "threat_layers1") 
+  metricplots_fol <- make_folder(dest_disk, "MHW", var_nm[1], "plots_metric1")
+  refplots_fol <- make_folder(dest_disk, "MHW", var_nm[1], "plots_refugia1") 
   
   
   
@@ -45,20 +45,19 @@
   
   
 # Plot metric and save ---------------------------------------------------------
-  
-  col_pal <- rev(RColorBrewer::brewer.pal("RdBu", n = 11))
-  
-    
+
+  col_pal <- rev(RColorBrewer::brewer.pal("RdBu", n = 11)) # For positive direction (tos)
+
+
   ## Plot  -------
     
     plot_metric <- function(x, region, region_nm, brks, pal) {
       n_layers <- nlayers(x)
-      xx <- clamp(x, lower = -50, upper = 150)
-      x_masked <- terra::mask(xx, region) # Mask data to whole EEZ
+      x_masked <- terra::mask(x, region) # Mask data to whole EEZ
       
       p <- tm_shape(x_masked) + 
         tm_raster(palette = pal,
-                  breaks = seq(-50, 150, 5),
+                  breaks = brks,
                   midpoint = 0,
                   title = paste0("Rate of change in ", var_nm[1], " ", var_nm[3], " per decade")) +
         tm_shape(oceaniaAsia) +
@@ -69,13 +68,13 @@
       
       arranged <- tmap_arrange(p, ncol = 1, widths = 0.6)
       nm <- str_split_i(names(x)[1], "_", 4) %>%
-        paste0(metricplots_fol, "/", var_nm[1], "_ROC_METRICplot_", region_nm, "RdBu_", ., ".pdf") 
+        paste0(metricplots_fol, "/", var_nm[1], "_METRICplot_", region_nm, "RdBu_", ., ".pdf") 
       tmap_save(arranged, nm)
     }
     
     map(eez_stack, ~ plot_metric(.x, eez, "eez", brks_eez, col_pal)) 
-    map(mpa_stack, ~ plot_metric(.x, MPA_shp, "mpas", brks_mpa, col_pal))
-    map(mpaoutside_stack, ~ plot_metric(.x, outsideMPA_shp, "outsidempas", brks_mpa, col_pal))
+    map(mpa_stack, ~ plot_metric(.x, MPA_shp, "mpa", brks_mpa, col_pal))
+    map(mpaoutside_stack, ~ plot_metric(.x, MPA_shp, "outsidempa", brks_mpa, col_pal))
   
   
   
@@ -84,7 +83,7 @@
   m_pal <- c("#EA7A0B", "#EBB65C")
   e_pal <- c("#086788", "#A0DAE4")
   
-
+  
   ## Plot -------
     
     plotref_dif <- function(m, e) {

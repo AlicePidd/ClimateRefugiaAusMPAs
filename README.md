@@ -38,7 +38,7 @@ In addition to data preparation scripts relevant to the case study region (here,
 -   Marine heatwave cumulative intensity
 -   Identifying climate refugia based on pre-determined thresholds of climate exposure
 
-This workflow follows numbered scripts for each metric. Workflow for the rates of change (`ROC`) metric follows a `calc`, `stack`, `breaks`, `plot`, `summary stats`, `binomial refugia` order. These scripts involve a `calc` step as this metric was computed on raw ocean climate variables (SST, o2, pH), whereas climate velocity (`VoCC`) and cumulative intensity of marine heatwaves (`MHW-CumInt)` were computed using existing R packages. The rate of change in MHWs (`MHW-ROC)` were computed with a `calc` step, as with the other `ROC` variables.
+This workflow is intended to follow ESM processing steps as in `hotrstuff`, where raw data are first processed to suit the study region and bespoke analyses. Scripts included here are numbered, and the workflow is designed to follow the steps `stack`, `breaks`, `plot`, `summary stats`, `binomial refugia`. Workflow for the rates of change (`ROC`) metric, including rate of change in marine heatwave cumulative intensity (`MHW-ROC)`), includes an additional `calc` script step as this metric was computed on raw ocean climate variables (SST, o2, pH). Climate velocity (`VoCC`) and cumulative intensity of marine heatwaves (`MHW-CumInt)` metrics were computed using existing R packages, and so do not include a `calc` script.
 
 ## Machine specifications
 
