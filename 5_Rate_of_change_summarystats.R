@@ -15,10 +15,9 @@
 # Variable name ----------------------------------------------------------------
   
   #**Change for each variable*
-  var_nm <- tos[1] 
-  # var_nm <- ph[1]  
-  # var_nm <- o2[1] 
-  # var_nm <- mhwROC[1]  
+  # var_nm <- tos[1] 
+  # var_nm <- ph[1]
+  var_nm <- o2[1]
 
   
   
@@ -57,7 +56,7 @@
   files <- dir(infol, full.names = TRUE)
   files
   walk(files, get_dat) 
-  
+
   
   
 # Summary stats of the above plotting dfs --------------------------------------

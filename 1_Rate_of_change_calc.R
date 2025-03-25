@@ -1,4 +1,4 @@
-# Calculate rate of change metric
+# Calculate rate of change metric for variables of ocean climate 
   # Written by Alice Pidd (alicempidd@gmail.com) and David Schoeman (david.schoeman@gmail.com)
 	# June 2023
 
@@ -14,17 +14,16 @@
 # Variable name ----------------------------------------------------------------
   
   #**Change for each variable*
-  var_nm <- tos[1]  
-  # var_nm <- ph[1]  
-  # var_nm <- o2[1] 
-  # var_nm <- mhwROC[1]  
-  
+  var_nm <- tos[1]
+  # var_nm <- ph[1]
+  # var_nm <- o2[1]
+
   
   
 # Folders ----------------------------------------------------------------------
   
-  infol <- make_folder(source_disk, "", var_nm, "8_ensembles_yearmean") # Ensemble decadal trend files
-  ipcc_fol <- make_folder(source_disk, "", var_nm, "9_IPCC_splits") # Ens trend files, split into IPCC reporting periods
+  infol <- make_folder(source_disk, "", var_nm, "8_ensembles") # Ensemble files daily/monthly data
+  ipcc_fol <- make_folder(source_disk, "", var_nm, "9_IPCC_splits") # Ensemble files daily/monthly data, split into IPCC reporting periods
   outfol <- make_folder(source_disk, "ROC", var_nm, "calc1") # ROC calc files for each reporting period
 
   
@@ -44,7 +43,7 @@
   
   
   
-# Calculate rates of change ----------------------------------------------------
+# Calculate decadal rates of change per reporting period -----------------------
   
   get_trend <- function(f) { 
     ofile1 <- f %>%
@@ -56,11 +55,12 @@
       str_replace("ensemble" ,"ens-trend") %>% 
       str_replace(paste0(get_CMIP6_bits(f)[2]), "ROC-decadal")
     
-    #**From daily to decadal**
-      cdo_code <- paste0("cdo -L -trend -mulc,3650 ", f, " ", ofile1, " ", ofile2) 
-    
-    #**From monthly to decadal**
-      # cdo_code <- paste0("cdo -L -trend -mulc,120 ", f, " ", ofile1, " ", ofile2)
+    if(var_nm[1] == "tos") {
+      cdo_code <- paste0("cdo -L -trend -mulc,3650 ", f, " ", ofile1, " ", ofile2) # For daily to decadal
+    } else {
+      cdo_code <- paste0("cdo -L -trend -mulc,120 ", f, " ", ofile1, " ", ofile2) # For monthyly to decadal
+    }
+    cdo_code
     
     system(cdo_code)
     
@@ -68,7 +68,7 @@
     system(remove_intercepts) 
   }
   
-  files <- dir(ipcc_fol, full.names = TRUE, pattern = "126")
+  files <- dir(ipcc_fol, full.names = TRUE)
   files
   
   plan(multisession, workers = 10)

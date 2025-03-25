@@ -15,10 +15,9 @@
 # Variable name ----------------------------------------------------------------
   
   #**Change for each variable*
-  var_nm <- tos  
-  # var_nm <- ph[1]  
-  # var_nm <- o2[1] 
-  # var_nm <- mhwROC[1]  
+  var_nm <- tos[1]
+  # var_nm <- ph[1]
+  # var_nm <- o2[1]
 
   
   
@@ -85,7 +84,7 @@
     
     map(eez_stack, ~ plot_metric(.x, eez, "eez", brks_eez, col_pal)) 
     map(mpa_stack, ~ plot_metric(.x, MPA_shp, "mpa", brks_mpa, col_pal))
-    map(mpaoutside_stack, ~ plot_metric(.x, MPA_shp, "mpa", brks_mpa, col_pal))
+    map(mpaoutside_stack, ~ plot_metric(.x, outsideMPA_shp, "outsidempa", brks_mpa, col_pal))
   
   
   
@@ -150,6 +149,6 @@
       tmap_save(arranged, nm)
     }
     map2(mpa_stack, mpaoutside_stack, ~ plotref_dif(.x, .y))
-  
-  
+    
+    
     

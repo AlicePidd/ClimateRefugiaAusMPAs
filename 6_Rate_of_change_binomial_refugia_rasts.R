@@ -18,7 +18,6 @@
   var_nm <- tos[1] 
   # var_nm <- ph[1]  
   # var_nm <- o2[1] 
-  # var_nm <- mhwROC[1]  
 
   per <- 0.3 
   
@@ -39,9 +38,9 @@
   mpa_stack <- readRDS(paste0(infol, "/", var_nm, "_ROC_mpa_stack.RDA"))
   mpaoutside_stack <- readRDS(paste0(infol, "/", var_nm, "_ROC_outsidempa_stack.RDA"))
   
-  brksREF_eez <- readRDS(paste0(infol, "/", var_nm, "_ROC_REFeez_breaks_", per*100, "per.RDA"))
-  brksREF_mpa <- readRDS(paste0(infol, "/", var_nm, "_ROC_REFmpa_breaks_", per*100, "per.RDA"))
-  brksREF_mpaoutside <- readRDS(paste0(infol, "/", var_nm, "_ROC_REFoutsidempa_breaks_", per*100, "per.RDA"))
+  brksREF_eez <- readRDS(paste0(infol, "/", var_nm, "_ROC_eez_refugia_breaks_", per*100, "per.RDA"))
+  brksREF_mpa <- readRDS(paste0(infol, "/", var_nm, "_ROC_mpa_refugia_breaks_", per*100, "per.RDA"))
+  brksREF_mpaoutside <- readRDS(paste0(infol, "/", var_nm, "_ROC_outsidempa_refugia_breaks_", per*100, "per.RDA"))
   
   
   
@@ -80,7 +79,7 @@
     r_masked <- terra::mask(r_cropped, eez) 
 
     # Relate data to the break for refugia
-    if(var_nm == "tos") {
+    if(var_nm[1] == "tos") {
       rr <- r_masked <= brks # For positive direction (tos)
     } else {
       rr <- r_masked >= brks # For negative variables (o2, pH)

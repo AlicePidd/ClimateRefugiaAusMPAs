@@ -24,7 +24,7 @@
 
   
   
-# Calculate decadal rates of change --------------------------------------------
+# Calculate decadal rates of change from yearly data ---------------------------
   
   get_trend <- function(f) {
     
@@ -38,7 +38,7 @@
       str_remove("Oyear_") %>% 
       paste0(outfol, "/", .)
     
-    cdo_code <- paste0("cdo -L -trend -mulc,10 ", f, " ", ofile1, " ", ofile2) # Decadal
+    cdo_code <- paste0("cdo -L -trend -mulc,10 ", f, " ", ofile1, " ", ofile2) 
     system(cdo_code) 
     
     remove_intercepts <- paste0("rm ", ofile1) # Don't need the intercept (created by "cdo trend")

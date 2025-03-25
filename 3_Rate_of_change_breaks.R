@@ -14,11 +14,10 @@
 # Variable name ----------------------------------------------------------------
   
   #**Change for each variable*
-  var_nm <- tos[1]  
-  # var_nm <- ph[1]  
-  # var_nm <- o2[1] 
-  # var_nm <- mhwROC[1]  
-  
+  var_nm <- tos[1]
+  # var_nm <- ph[1]
+  # var_nm <- o2[1]
+
   
   
 # Folders ----------------------------------------------------------------------
@@ -70,19 +69,21 @@
   get_recentterm_brks <- function(df, ref_per) { 
     dflist <- as.list(df)
     
+    if(var_nm[1] == "tos") {
+      q <- ref_per # For tos
+    } else {
+      q <- 1-(1-ref_per)  # For ph, o2
+    }
+    q
+    
     brks <- map(dflist, ~ {
       na.omit(.x) %>% 
         as.vector() %>% 
         unlist() %>% 
         unname() %>% 
-        
-        ##** CHOOSE: *
-        quantile(., ref_per) %>%   # for tos
-        # quantile(., 1-(1-ref_per)) %>%  # for pH and o2 where non-refugia occur in a negative direction (decreasing)
-
+        quantile(., q) %>%
         c(-Inf, ., Inf) 
     })
-    
     return(brks)
   }
   

@@ -15,16 +15,15 @@
 # Variable name ----------------------------------------------------------------
   
   #**Change for each variable*
-  var_nm <- tos[1]  
-  # var_nm <- ph[1]  
-  # var_nm <- o2[1] 
-  # var_nm <- mhwROC[1]  
-  
+  var_nm <- tos[1]
+  # var_nm <- ph[1]
+  # var_nm <- o2[1]
+
   
   
 # Folders ----------------------------------------------------------------------
   
-  infol <- make_folder(source_disk, "ROC", var_nm, "calc1") 
+  infol <- make_folder(source_disk, "ROC", var_nm, "calc1") # Decadal rates of change
   outfol <- make_folder(source_disk, "ROC", var_nm, "threat_layers1") 
   
   
@@ -84,6 +83,7 @@
 # Get recent-term data ---------------------------------------------------------
 
     recent_dat <- dir(infol, full.names = TRUE, pattern = "recent") 
+    recent_dat
     
     
   ## For EEZ, including all MPAs ----
