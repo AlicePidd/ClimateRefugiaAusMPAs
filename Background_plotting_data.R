@@ -19,6 +19,7 @@
   MPA_shp <- readRDS(paste0(disk, "/mpas_numbered_shapefile.RDS"))
   outsideMPA_shp <- readRDS(paste0(disk, "/outsideMPAs_shapefile.RDS"))
   # IUCN_V_VI_shps <- readRDS("/Volumes/AliceShield/clim_data/masks/landsea_masks/IUCN-category_V-VI_shapefile.RDS")
+  eez_mask <- readRDS(paste0(disk, "/mask_EEZ_NAs.RDS"))
 
   e1 <- ext(105, 175, -50, -5) # Extent
   base_r <- rast(ext = e1, res = 0.25) # Base raster for resampling and cropping

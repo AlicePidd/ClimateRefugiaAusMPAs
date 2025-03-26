@@ -77,17 +77,18 @@
     extent <- terra::ext(105, 175, -50, -5)
     r_cropped <- terra::crop(r_rast, extent)
     r_masked <- terra::mask(r_cropped, eez) 
-
+    ssp <- str_split_i(names(r), "_", 4) %>% unique()
+    
     # Relate data to the break for refugia
     if(var_nm[1] == "tos") {
       rr <- r_masked <= brks # For positive direction (tos)
     } else {
       rr <- r_masked >= brks # For negative variables (o2, pH)
     }
-    return(rr)
+    rr
     rr <- terra::ifel(rr, 1, 0) # Make it binary instead of T/F
-    
-    ssp <- str_split_i(names(r), "_", 4) %>% unique()
+    names(rr) <- names(r)
+
     filename <- paste0(binomial_ssp_fol, "/ROC_", var_nm, "-binomial-refugia_eez_", ssp, "_", per*100, "per", ".nc")
     terra::writeCDF(rr, filename, overwrite = TRUE) 
   }
