@@ -87,13 +87,12 @@ make_folder <- function(d, m, v, fol_dir_name) {
   	
   ## Metric labels for plotting ------
   	
-  	tos <- c("tos", "temperature of surface (°C)", "(°C)")
-  	o2 <- c("o2", "dissolved oxygen concentration (units)", "(units)")
-  	ph <- c("ph", "pH (mol H Kg¯¹)", "(mol H Kg¯¹)")
+  	tos <- c("tos", "temperature of surface (°C)", "(°C)", "Sea surface temperature anomalies relative to the recent past (1995-2014)", "Sea surface temperature anomalies (°C)")
+  	o2 <- c("o2", "dissolved oxygen concentration (units)", "(units)", "Ocean deoxygenation anomalies relative to the recent past (1995-2014)", "Ocean deoxygenation anomalies (mg/L)")
+  	ph <- c("ph", "pH (mol H Kg¯¹)", "(mol H Kg¯¹)", "Ocean acidification anomalies relative to the recent past (1995-2014)", "Ocean acidification anomalies (pH)")
   	VoCC <- c("VoCCMag", "Gradient-based climate velocity (km/decade)", "(km/decade)")
   	mhw <- c("MHW-CumInt", "Marine heatwave cumulative intensity", "(degree days)")
   	mhwROC <- c("MHW-ROC", "Rate of change in the cumulative intensity of marine heatwaves", "(degree days / decade)")
-  	
   	
   	
   ## SSP naming and ordering ------

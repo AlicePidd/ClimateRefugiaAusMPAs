@@ -34,15 +34,15 @@
   
 # Mask the data to refugia areas only, and find the total area (km2) of the MPAs and EEZ ------------------------------------------
   
-  # Area for MPAs
-  area_mpa <- terra::cellSize(rmpa, unit = "km")
-  area_mpa <- sum(values(area_mpa)[!is.na(values(rmpa))]) # Sum the values, without including NAs. Should be 1872959 km^2 (old area 2303489 km^2)
+  ## Area for the EEZ
+    area_eez <- terra::cellSize(reez, unit = "km")
+    area_eez <- sum(values(area_eez)[!is.na(values(reez))]) # Sum the values, without including NAs. Should be 6913648 km^2 (old area 1872959 km^2)
   
-  # Area for the EEZ
-  area_eez <- terra::cellSize(reez, unit = "km")
-  area_eez <- sum(values(area_eez)[!is.na(values(reez))]) # Sum the values, without including NAs. Should be 6913648 km^2 (old area 1872959 km^2)
+  ## Area for MPAs
+    area_mpa <- terra::cellSize(rmpa, unit = "km")
+    area_mpa <- sum(values(area_mpa)[!is.na(values(rmpa))]) # Sum the values, without including NAs. Should be 1872959 km^2 (old area 2303489 km^2)
   
-  # Area for outside of MPAs
-  area_outsidempa <- terra::cellSize(routsidempa, unit = "km") # Gives a spatraster
-  area_outsidempa <- sum(values(area_outsidempa)[!is.na(values(routsidempa))]) # Sum the values, without including NAs. Should be 5428299 km^2 (old area 4901916 km^2)
+  ## Area for outside of MPAs
+    area_outsidempa <- terra::cellSize(routsidempa, unit = "km") # Gives a spatraster
+    area_outsidempa <- sum(values(area_outsidempa)[!is.na(values(routsidempa))]) # Sum the values, without including NAs. Should be 5428299 km^2 (old area 4901916 km^2)
 
