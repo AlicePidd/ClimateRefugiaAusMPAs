@@ -1,4 +1,4 @@
-# Calculating timeseries of each rate of change variable (tos, ph, o2, MHW-ROC) 
+# Calculating timeseries summary stats for each rate of change variable (tos, ph, o2) 
   # Written by Alice Pidd
     # June 2024
 
@@ -53,17 +53,18 @@
     "long-term" = 2081:2100
   )
   
+  
   term_order <- c("recent-term",
                   "near-term",
                   "mid-term",
                   "intermediate-term",
                   "long-term")
   
+  
   assign_time_period <- function(year, time_periods) { # Make a term column
     period <- names(time_periods)[sapply(time_periods, function(x) year %in% x)]
     if(length(period) > 0) return(period) else return(NA_character_)
   }
-  
   
   
   dfs <- bind_rows(eez_df, mpa_df, outmpa_df) %>%
