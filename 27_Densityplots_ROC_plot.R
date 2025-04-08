@@ -57,7 +57,7 @@
         } else if(var_nm[1] == "ph") {
           c(0, 1700)
           } else {
-            c(0, NA)
+            c(0, NA) # Random else
             }
     
     ref_params <- if(var_nm[1] == "tos") {
