@@ -1,4 +1,4 @@
-# Density plots - Plotting climate exposure densities for ROC
+# Density plots - Plotting climate exposure densities for climate velocity
     # Written by Alice Pidd
       # November 2024
 
@@ -11,32 +11,29 @@
   
 
   
-# Variable name ----------------------------------------------------------------
+# Metric -----------------------------------------------------------------------
   
-  #**Change for each variable*
-  var_nm <- tos
-  # var_nm <- ph
-  # var_nm <- o2
-
+  var_nm <- "VoCCMag"  
+  
   
   
 # Folders ----------------------------------------------------------------------
   
-  infol <- make_folder(source_disk, "ROC", var_nm[1], "calc1") 
-  densityfol <- make_folder(source_disk, "ROC", var_nm[1], "density1") 
+  infol <- make_folder(source_disk, "VoCC", var_nm, "calc_cropped") 
+  densityfol <- make_folder(source_disk, "VoCC", var_nm, "density1") 
 
   
   
 # Create dfs for density plotting --------------------------------------------------
   
   get_dfs <- function(f, mask) {
-    out <- rast(f)
+    out <- rast(f)[[1]]
     out_masked <- mask(out, mask)
     zone <- deparse(substitute(mask))
     
     ssp <- str_split_i(basename(f), "_", 4)
-    term <- str_split_i(basename(f), "_", 6)
-    nm <- paste0(var_nm[1], "_ROC")
+    term <- str_split_i(basename(f), "_", 7)
+    nm <- var_nm
     names(out_masked) <- nm
     out_name <- paste0(densityfol, "/", nm, "_", ssp, "_", term, "_", zone, "_densitydf.RDA")
     
@@ -52,17 +49,18 @@
              Zone = zone) %>%
       saveRDS(., out_name)
   }
-  files <- dir(infol, full.names = TRUE) # All terms
+  files <- dir(infol, full.names = TRUE)
   files
 
   walk(files, ~ get_dfs(.x, reez))
   walk(files, ~ get_dfs(.x, rmpa))
 
-  
+
   
 # Join the datasets together, with one file for each SSP -----------------------
   
   run_code <- function(term) {
+
     join_dfs <- function(f, s) {
       m <- grep(s, f, value = TRUE)
       combined_dfs <- m %>%
@@ -74,11 +72,11 @@
       grep("densitydf.RDA", ., value = TRUE)
     combined_ssp_dfs <- future_map(ssp_list, ~ join_dfs(files, .x))
     names(combined_ssp_dfs) <- ssp_list
-    saveRDS(combined_ssp_dfs, paste0(densityfol, "/", var_nm[1], "_ROC_combinedSSP_", term, "_dflist.RDS"))
+    saveRDS(combined_ssp_dfs, paste0(densityfol, "/", var_nm, "_combinedSSP_", term, "_dflist.RDS"))
   }
   
   ssp_list <- c("ssp126", "ssp245", "ssp370", "ssp585")
-  term_list <- c("recent-term", "near-term", "mid-term", "intermediate-term", "long-term")
+  term_list <- c("recent", "near", "mid", "intermediate", "long")
   walk(term_list, run_code) 
   
   
@@ -87,7 +85,7 @@
 
   calculate_stat_by_zone <- function(f) {
     df_list <- readRDS(f)
-    v <- paste0(var_nm[1], "_ROC")
+    v <- var_nm
     
     median_list <- map(df_list, ~{
       df <- .x
@@ -119,6 +117,5 @@
   median_results <- map_dfr(files, calculate_stat_by_zone)
   median_results
   
-  saveRDS(median_results, paste0(densityfol, "/", var_nm[1], "_ROC_medians_per_variable-ssp-term-zone.RDS"))
-    
+  saveRDS(median_results, paste0(densityfol, "/", var_nm, "_medians_per_variable-ssp-term-zone.RDS"))
     

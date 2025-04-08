@@ -1,4 +1,4 @@
-# Density plots - Plotting climate exposure densities for ROC
+# Density plots - Plotting climate exposure densities for MHW-ROC
     # Written by Alice Pidd
       # November 2024
 
@@ -13,17 +13,14 @@
   
 # Variable name ----------------------------------------------------------------
   
-  #**Change for each variable*
-  var_nm <- tos
-  # var_nm <- ph
-  # var_nm <- o2
-
+  var_nm <- mhwROC
+  
   
   
 # Folders ----------------------------------------------------------------------
   
-  infol <- make_folder(source_disk, "ROC", var_nm[1], "calc1") 
-  densityfol <- make_folder(source_disk, "ROC", var_nm[1], "density1") 
+  infol <- make_folder(source_disk, "MHW", var_nm[1], "calc1") 
+  densityfol <- make_folder(source_disk, "MHW", var_nm[1], "density1") 
 
   
   
@@ -36,7 +33,7 @@
     
     ssp <- str_split_i(basename(f), "_", 4)
     term <- str_split_i(basename(f), "_", 6)
-    nm <- paste0(var_nm[1], "_ROC")
+    nm <- var_nm[1]
     names(out_masked) <- nm
     out_name <- paste0(densityfol, "/", nm, "_", ssp, "_", term, "_", zone, "_densitydf.RDA")
     
@@ -46,8 +43,7 @@
                    names_to = "Variable", names_prefix = "X", 
                    values_to = nm,
                    values_drop_na = TRUE) %>% 
-      mutate(Variable = str_replace_all(Variable, "[.]", "-"),
-             Term = term,
+      mutate(Term = term,
              Scenario = ssp,
              Zone = zone) %>%
       saveRDS(., out_name)
@@ -58,7 +54,7 @@
   walk(files, ~ get_dfs(.x, reez))
   walk(files, ~ get_dfs(.x, rmpa))
 
-  
+
   
 # Join the datasets together, with one file for each SSP -----------------------
   
@@ -74,7 +70,7 @@
       grep("densitydf.RDA", ., value = TRUE)
     combined_ssp_dfs <- future_map(ssp_list, ~ join_dfs(files, .x))
     names(combined_ssp_dfs) <- ssp_list
-    saveRDS(combined_ssp_dfs, paste0(densityfol, "/", var_nm[1], "_ROC_combinedSSP_", term, "_dflist.RDS"))
+    saveRDS(combined_ssp_dfs, paste0(densityfol, "/", var_nm[1], "_combinedSSP_", term, "_dflist.RDS"))
   }
   
   ssp_list <- c("ssp126", "ssp245", "ssp370", "ssp585")
@@ -87,7 +83,7 @@
 
   calculate_stat_by_zone <- function(f) {
     df_list <- readRDS(f)
-    v <- paste0(var_nm[1], "_ROC")
+    v <- var_nm[1]
     
     median_list <- map(df_list, ~{
       df <- .x
@@ -96,7 +92,7 @@
       ssp <- unique(df$Scenario)
       zone <- unique(df$Zone)
       term <- unique(df$Term)
-      
+    
       median_df <- df %>%
         group_by(Zone) %>%
         summarise(Median = median(.data[[v]], na.rm = TRUE)) %>%
@@ -105,7 +101,7 @@
           Scenario = unique(df$Scenario), 
           Term = unique(df$Term),  
           Variable = v
-        )
+          )
       return(median_df)
     })
     
@@ -119,6 +115,5 @@
   median_results <- map_dfr(files, calculate_stat_by_zone)
   median_results
   
-  saveRDS(median_results, paste0(densityfol, "/", var_nm[1], "_ROC_medians_per_variable-ssp-term-zone.RDS"))
-    
+  saveRDS(median_results, paste0(densityfol, "/", var_nm[1], "_medians_per_variable-ssp-term-zone.RDS"))
     
