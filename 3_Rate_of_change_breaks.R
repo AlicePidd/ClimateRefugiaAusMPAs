@@ -12,11 +12,11 @@
   
 
 # Variable name ----------------------------------------------------------------
-  
+
   #**Change for each variable*
-  var_nm <- tos[1]
+  # var_nm <- tos[1]
   # var_nm <- ph[1]
-  # var_nm <- o2[1]
+  var_nm <- o2[1]
 
   
   
@@ -109,5 +109,5 @@
     recent_dfoutmpa <- readRDS(paste0(infol, "/", var_nm, "_ROC_outsidempa_recent-term_df.RDA")) 
     brks_recent_outmpa <- get_recentterm_brks(recent_dfoutmpa, per)
       saveRDS(brks_recent_outmpa, paste0(infol, "/", var_nm, "_ROC_outsidempa_refugia_breaks_", per*100, "per.RDA")) 
-  
+
   

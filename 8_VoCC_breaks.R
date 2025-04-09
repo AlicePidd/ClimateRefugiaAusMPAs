@@ -80,7 +80,7 @@
     return(brks)
   }
     
-  per <- 0.3     #**Percentage of the recent-term data we want to classify as refugia**
+  per <- 0.3   #**Percentage of the recent-term data we want to classify as refugia**
 
   
   ## For entire EEZ ----
