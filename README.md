@@ -1,6 +1,6 @@
 # ClimateRefugiaAusMPAs
 
-This repo contains R code underpinning the analyses for our paper, submitted to Global Change Biology:
+This repo contains R code underpinning the analyses for our paper, submitted to Earth's Future:
 
 > Climate refugia could disappear from Australia’s marine protected areas by 2040
 
