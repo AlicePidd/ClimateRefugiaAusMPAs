@@ -39,6 +39,9 @@
     subset(Year == 2100)
   outmpa_df %>% 
     subset(Year == 2100)
+  eez_df %>% 
+    subset(Year == 2100)
+  
 
 
   

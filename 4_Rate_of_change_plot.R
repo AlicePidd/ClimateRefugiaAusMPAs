@@ -15,8 +15,8 @@
 # Variable name ----------------------------------------------------------------
   
   #**Change for each variable*
-  var_nm <- tos[1]
-  # var_nm <- ph[1]
+  # var_nm <- tos[1]
+  var_nm <- ph[1]
   # var_nm <- o2[1]
 
   
@@ -66,20 +66,25 @@
       x_masked <- terra::mask(x, region) # Mask data to whole EEZ
       
       p <- tm_shape(x_masked) + 
-        tm_raster(palette = pal,
-                  breaks = brks,
-                  midpoint = 0,
-                  title = paste0("Rate of change in ", var_nm[1], " ", var_nm[3], " per decade")) +
-        tm_shape(oceaniaAsia) +
-        tm_fill("grey45") +
+        tm_raster(col.scale = tm_scale(values = pal,
+                                       breaks = brks,
+                                       midpoint = 0),
+                  col.legend = tm_legend(title = paste0("Rate of change in ", var_nm[1], " ", var_nm[3], " per decade"))) +
+        tm_shape(aus_shp) +
+        tm_fill(fill = "grey45") +
         tm_shape(eez) +
         tm_borders(col = "black", lwd = 0.5) +
-        tm_facets(nrow = n_layers)
+        tm_facets(nrow = n_layers, 
+                  free.coords = FALSE,  # Keep coordinates consistent
+                  sync = TRUE) +       # Synchronize the maps
+        tm_layout(frame = FALSE,  # Remove outer border
+                  inner.margins = c(0.02, 0.02, 0.02, 0.02))  # Adjust margins
       
-      arranged <- tmap_arrange(p, ncol = 1, widths = 0.6)
       nm <- str_split_i(names(x)[1], "_", 4) %>%
         paste0(metricplots_fol, "/", var_nm[1], "_ROC_METRICplot_", region_nm, "RdBu_", ., ".pdf") 
-      tmap_save(arranged, nm)
+      
+      # Save with explicit dimensions - make it wider to accommodate legend
+      tmap_save(p, nm, width = 14, height = 10, units = "in")
     }
     
     map(eez_stack, ~ plot_metric(.x, eez, "eez", brks_eez, col_pal)) 
@@ -123,32 +128,40 @@
       x_masked_eez <- terra::mask(e, outsideMPA_shp) 
       
       p_eez <- tm_shape(e) +
-        tm_raster(palette = e_pal,
-                  breaks = brksREF_mpaoutside[[1]],
-                  labels = legend_labs) +
-        tm_shape(oceaniaAsia) +
-        tm_fill("grey60") +
+        tm_raster(col.scale = tm_scale(values = e_pal,
+                                       breaks = brksREF_mpaoutside[[1]],
+                                       labels = legend_labs),
+                  col.legend = tm_legend(title = paste0("Rate of change in ", var_nm[1], " ", var_nm[3], " per decade"))) +
+        tm_shape(aus_shp) +
+        tm_fill(fill = "grey60") +
         tm_shape(eez) +
         tm_borders(col = "black", lwd = 0.5) +
-        tm_facets(nrow = n_layers_eez)
+        tm_facets(nrow = n_layers_eez, sync = TRUE) +
+        tm_layout(frame = FALSE,  # Remove outer border
+                  inner.margins = c(0.02, 0.02, 0.02, 0.02))  # Adjust margins
       
       p_mpa <- p_eez +
         tm_shape(m) +
-        tm_raster(palette = m_pal,
-                  breaks = brksREF_mpa[[1]],
-                  labels = legend_labs) +
-        tm_shape(oceaniaAsia) +
-        tm_fill("grey60") +
+        tm_raster(col.scale = tm_scale(values = m_pal,
+                                       breaks = brksREF_mpa[[1]],
+                                       labels = legend_labs),
+                  col.legend = tm_legend(title = paste0("Rate of change in ", var_nm[1], " ", var_nm[3], " per decade"))) +
+        tm_shape(aus_shp) +
+        tm_fill(fill = "grey60") +
         tm_shape(eez) +
         tm_borders(col = "black", lwd = 0.5) +
-        tm_facets(nrow = n_layers_mpa)
+        tm_facets(nrow = n_layers_mpa, sync = TRUE) +
+        tm_layout(frame = FALSE,  # Remove outer border
+                  inner.margins = c(0.02, 0.02, 0.02, 0.02))  # Adjust margins
       
       arranged <- tmap_arrange(p_mpa, ncol = 1, widths = 0.4)
       nm <- str_split_i(names(m)[1], "_", 4) %>%
         paste0(refplots_fol, "/", var_nm[1], "_ROC_REFplot_dif-mpaeez-quadcolour_", ., "_", per*100, "per",".pdf")
-      tmap_save(arranged, nm)
+      
+      # Save with explicit dimensions
+      tmap_save(arranged, nm, width = 14, height = 10, units = "in")
     }
-    map2(mpa_stack, mpaoutside_stack, ~ plotref_dif(.x, .y))
     
+    map2(mpa_stack, mpaoutside_stack, ~ plotref_dif(.x, .y))    
     
     

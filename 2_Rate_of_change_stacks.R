@@ -15,9 +15,9 @@
 # Variable name ----------------------------------------------------------------
   
   #**Change for each variable*
-  var_nm <- tos[1]
+  # var_nm <- tos[1]
   # var_nm <- ph[1]
-  # var_nm <- o2[1]
+  var_nm <- o2[1]
 
   
   

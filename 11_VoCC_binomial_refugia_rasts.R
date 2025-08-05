@@ -21,9 +21,9 @@
 # Folders ----------------------------------------------------------------------
   
   infol <- make_folder(source_disk, "VoCC", var_nm, "threat_layers1")
-  # ssp_fol <- make_folder(source_disk, "VoCC", "binomial_layers", paste0("1_", var_nm, "_ssp_splits"))
+  ssp_fol <- make_folder(source_disk, "VoCC", "binomial_layers", paste0("1_", var_nm, "_ssp_splits"))
   term_fol <- make_folder(source_disk, "VoCC", "binomial_layers", paste0("1_", var_nm, "_term_splits"))
-  # binomial_ssp_fol <- make_folder(source_disk, "VoCC", "binomial_layers", paste0("2_", var_nm, "_ssp_binomial-refugia"))
+  binomial_ssp_fol <- make_folder(source_disk, "VoCC", "binomial_layers", paste0("2_", var_nm, "_ssp_binomial-refugia"))
   binomial_term_fol <- make_folder(source_disk, "VoCC", "binomial_layers", paste0("2_", var_nm, "_term_binomial-refugia"))
   # plots_fol <- make_folder(source_disk, "VoCC", var_nm, "plots_binomial1")
   
@@ -141,4 +141,3 @@
       title(main = basename(f))
     }
     map(files, plot_comb)
-    

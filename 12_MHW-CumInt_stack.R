@@ -114,8 +114,8 @@
     
     rasters <- rast(rasters)
     threat_masked <- terra::mask(rasters, mask) 
-    names(rasters) <- basename(dir_files) 
-    threat_stack <- stack(rasters)
+    names(threat_masked) <- basename(dir_files) 
+    threat_stack <- stack(threat_masked)
     
     subset_threatstack <- function(ssp){ 
       r_sub <- raster::subset(threat_stack, grep(ssp, names(threat_stack)))

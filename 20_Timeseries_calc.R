@@ -14,9 +14,9 @@
 # Variable name ----------------------------------------------------------------
   
   #**Change for each variable*
-  # var_nm <- tos[1]
+  var_nm <- tos[1]
   # var_nm <- ph[1]
-  var_nm <- o2[1]
+  # var_nm <- o2[1]
 
   
   
@@ -86,7 +86,7 @@
   
   ## Eyeball the timeseries
   
-    walk(dir(yearmean_eez_fol, full.names = TRUE), ~plot(rast(.x)[] %>% as.vector(), type = "l")) # Provides logical-looking plots...
+    walk(dir(yearmean_mpa_fol, full.names = TRUE), ~plot(rast(.x)[] %>% as.vector(), type = "l")) # Provides logical-looking plots...
 
   
   
@@ -139,7 +139,7 @@
   
 # Compute yearmean for ensembled anomaly files ---------------------------------
   
-  files <- dir(ens, full.names = TRUE)
+  files <- dir(ens_fol, full.names = TRUE)
   files
   
   walk(files, ~ do_mask_fldmean(.x, "eez", "/Volumes/AliceShield/clim_data/masks/mask_EEZ_NAs.nc", yearmean_eez_fol)) 
@@ -149,8 +149,5 @@
   
   ## Eyeball the timeseries
   
-  walk(dir(yearmean_eez_fol, full.names = TRUE), ~plot(rast(.x)[] %>% as.vector(), type = "l")) # Provides logical-looking plots...
+  walk(dir(yearmean_mpa_fol, full.names = TRUE), ~plot(rast(.x)[] %>% as.vector(), type = "l")) # Provides logical-looking plots...
   
-  
-  
-

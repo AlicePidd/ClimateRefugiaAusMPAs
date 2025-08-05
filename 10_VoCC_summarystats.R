@@ -53,7 +53,7 @@
   }
   
   files <- dir(infol, full.names = TRUE)
-  filesrea
+  files
   
   walk(files, function(f) get_dat(f, eez))
   walk(files, function(f) get_dat(f, rmpa))
