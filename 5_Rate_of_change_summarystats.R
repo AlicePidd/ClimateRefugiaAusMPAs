@@ -95,7 +95,7 @@
   
   
   
-# Calculate the proportion of the EEZ and of MPAs that are climate refugia - rate of change ---------------
+# Calculate the proportion of the area outside of and within MPAs that are climate refugia ---------------
   
   outmpa <- readRDS(paste0(threat_fol, "/", var_nm, "_ROC_mpa_stack.RDA"))
   outeez <- readRDS(paste0(threat_fol, "/", var_nm, "_ROC_eez_stack.RDA"))
