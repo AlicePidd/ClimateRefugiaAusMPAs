@@ -15,9 +15,9 @@
 # Variable name ----------------------------------------------------------------
   
   #**Change for each variable*
-  # var_nm <- tos[1]
+  var_nm <- tos[1]
   # var_nm <- ph[1]
-  var_nm <- o2[1]
+  # var_nm <- o2[1]
 
   
   
@@ -132,6 +132,7 @@
       p_eez <- tm_shape(e) +
         tm_raster(col.scale = tm_scale(values = e_pal,
                                        breaks = brksREF_mpaoutside[[1]],
+                                       # breaks = brksREF_eez[[1]],
                                        labels = legend_labs),
                   col.legend = tm_legend(title = paste0("Rate of change in ", var_nm[1], " ", var_nm[3], " per decade"))) +
         tm_shape(aus_shp) +
