@@ -91,64 +91,54 @@
   
 # Plot refugia and save ---------------------------------------------------------
   
-  m_pal <- c("#EA7A0B", "#EBB65C")
-  e_pal <- c("#086788", "#A0DAE4")
-  
+    m_pal <- c("#EA7A0B", "#EBB65C")  # In a positive direction (tos only)
+    e_pal <- c("#086788", "#A0DAE4")  # In a positive direction (tos only)
+    
 
   ## Plot -------
     
   plotref_dif <- function(m, e) {
     n_layers_mpa <- nlayers(m)
-    x_masked_mpa <- terra::mask(m, MPA_shp)
+    # x_masked_mpa <- terra::mask(m, MPA_shp)
+    x_masked_mpa <- m
     
     n_layers_eez <- nlayers(e)
-    x_masked_eez <- terra::mask(e, outsideMPA_shp) 
-    
+    # x_masked_eez <- terra::mask(e, outsideMPA_shp) 
+    x_masked_eez <- e 
+
     p_eez <- tm_shape(e) +
       tm_raster(col.scale = tm_scale(values = e_pal,
                                      breaks = brksREF_mpaoutside[[1]],
-                                     labels = c(paste0("Refugia (≤ ", per*100, "% change)"),
-                                                paste0("Non-refugia (> ", per*100, "% change)"))),
-                col.legend = tm_legend(title = "Classification")) +
+                                     labels = c(paste0("Refugia (> ", per*100, "% change)"),
+                                                paste0("Non-refugia (≤ ", per*100, "% change)")))) +
       tm_shape(aus_shp) +
-      tm_fill(fill = "grey45") +
+      tm_fill(fill = "grey60") +
       tm_shape(oceania_shp) +
-      tm_fill(fill = "grey45") +
+      tm_fill(fill = "grey60") +
       tm_shape(eez) +
       tm_borders(col = "black", lwd = 0.5) +
       tm_facets(nrow = n_layers_eez, sync = TRUE) +
       tm_layout(frame = FALSE,
-                inner.margins = c(0.01, 0.01, 0.01, 0.01),
-                outer.margins = c(0.01, 0.01, 0.01, 0.01),
-                between.margin = 0.01,
-                legend.outside = TRUE,
-                legend.outside.position = "right",
-                legend.outside.size = 0.15)
+                inner.margins = c(0.01, 0.01, 0.01, 0.01))
     
     p_mpa <- p_eez +
       tm_shape(m) +
       tm_raster(col.scale = tm_scale(values = m_pal,
                                      breaks = brksREF_mpa[[1]],
-                                     labels = c(paste0("Refugia (≤ ", per*100, "% change)"),
-                                                paste0("Non-refugia (> ", per*100, "% change)"))),
-                col.legend = tm_legend(title = "Classification")) +
+                                     labels = c(paste0("Refugia (> ", per*100, "% change)"),
+                                                paste0("Non-refugia (≤ ", per*100, "% change)")))) +
       tm_shape(aus_shp) +
-      tm_fill(fill = "grey45") +
+      tm_fill(fill = "grey60") +
       tm_shape(oceania_shp) +
-      tm_fill(fill = "grey45") +
+      tm_fill(fill = "grey60") +
       tm_shape(eez) +
       tm_borders(col = "black", lwd = 0.5) +
       tm_facets(nrow = n_layers_mpa, sync = TRUE) +
       tm_layout(frame = FALSE,
-                inner.margins = c(0.01, 0.01, 0.01, 0.01),
-                outer.margins = c(0.01, 0.01, 0.01, 0.01),
-                between.margin = 0.01,
-                legend.outside = TRUE,
-                legend.outside.position = "right",
-                legend.outside.size = 0.15)
+                inner.margins = c(0.01, 0.01, 0.01, 0.01))
     
     nm <- str_split_i(names(m)[1], "_", 4) %>%
-      paste0(refplots_fol, "/", var_nm[1], "_REFplot_dif-mpaeez-quadcolour_", ., "_", per*100, "per",".pdf")
+      paste0(refplots_fol, "/", var_nm[1], "_REFplot_dif-mpaeez-quadcolour_oceania_", ., "_", per*100, "per",".pdf")
     
     # Save with explicit dimensions and remove tmap_arrange
     tmap_save(p_mpa, nm, width = 14, height = 10, units = "in")

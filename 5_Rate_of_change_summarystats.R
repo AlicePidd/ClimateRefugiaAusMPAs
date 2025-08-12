@@ -16,8 +16,8 @@
   
   #**Change for each variable*
   # var_nm <- tos[1]
-  var_nm <- ph[1]
-  # var_nm <- o2[1]
+  # var_nm <- ph[1]
+  var_nm <- o2[1]
 
   
   
@@ -25,7 +25,6 @@
   
   infol <- make_folder(source_disk, "ROC", var_nm[1], "calc1") # Raster stacks per SSP
   plotdf_fol <- make_folder(source_disk, "ROC", var_nm, "plotdfs1")
-  mask_folder <- make_folder(source_disk,  "masks", "landsea_masks", "")
   threat_fol <- make_folder(source_disk, "ROC", var_nm, "threat_layers1") # Raster stacks per SSP
   per <- 0.3
   

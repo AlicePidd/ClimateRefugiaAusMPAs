@@ -23,6 +23,7 @@
   infol <- make_folder(source_disk, "VoCC", var_nm, "calc_cropped") 
   layer_fol <- make_folder(source_disk, "VoCC", var_nm, "threat_layers1")
   plotdf_fol <- make_folder(source_disk, "VoCC", var_nm, "plotdfs1")
+  per <- 0.3  
   
   
 
@@ -61,55 +62,53 @@
 
   
   
-# Summary stats of the above plotting dfs --------------------------------------
+  ## Summary stats of the above plotting dfs --------------------------------------
+    
+    summarise_vocc <- function(region) {  
+      files <- dir(plotdf_fol, full.names = TRUE, pattern = region)
   
-  summarise_vocc <- function(region) {  
-    files <- dir(plotdf_fol, full.names = TRUE, pattern = region)
-
-    do_it <- function(f) {
-      term <- str_split_i(basename(f), "_", 3)
-      ssp <- str_split_i(basename(f), "_", 2)
-      reg <- str_split_i(basename(f), "_", 4)
-      r <- readRDS(f)
-      m <- unique(r$Variable)
-      out <- r %>% 
-        group_by(Term) %>% 
-        dplyr::summarise(Scenario = ssp,
-                         Variable = m,
-                         Region = reg,
-                         Median = median(voccMag, na.rm = TRUE),
-                         Q1 = quantile(voccMag, .25, na.rm = TRUE),
-                         Q3 = quantile(voccMag, .75, na.rm = TRUE),
-                         Q05 = quantile(voccMag, .05, na.rm = TRUE),
-                         Q95 = quantile(voccMag, .95, na.rm = TRUE),
-                         Min = min(voccMag, na.rm = TRUE),
-                         Max = max(voccMag, na.rm = TRUE))
-      return(out)
+      do_it <- function(f) {
+        term <- str_split_i(basename(f), "_", 3)
+        ssp <- str_split_i(basename(f), "_", 2)
+        reg <- str_split_i(basename(f), "_", 4)
+        r <- readRDS(f)
+        m <- unique(r$Variable)
+        out <- r %>% 
+          group_by(Term) %>% 
+          dplyr::summarise(Scenario = ssp,
+                           Variable = m,
+                           Region = reg,
+                           Median = median(voccMag, na.rm = TRUE),
+                           Q1 = quantile(voccMag, .25, na.rm = TRUE),
+                           Q3 = quantile(voccMag, .75, na.rm = TRUE),
+                           Q05 = quantile(voccMag, .05, na.rm = TRUE),
+                           Q95 = quantile(voccMag, .95, na.rm = TRUE),
+                           Min = min(voccMag, na.rm = TRUE),
+                           Max = max(voccMag, na.rm = TRUE))
+        return(out)
+      }
+      dat <- map(files, do_it) %>% 
+        bind_rows() %>% 
+        mutate(Term = factor(Term, levels = c("recent-term", "near-term", "mid-term", "intermediate-term", "long-term"))) %>% 
+        arrange(Term)
+      dat
+      saveRDS(dat, paste0(plotdf_fol, "/", var_nm, "_summary_stats_", region, "_for_plotting.RDA"))
     }
-    dat <- map(files, do_it) %>% 
-      bind_rows() %>% 
-      mutate(Term = factor(Term, levels = c("recent-term", "near-term", "mid-term", "intermediate-term", "long-term"))) %>% 
-      arrange(Term)
-    dat
-    saveRDS(dat, paste0(plotdf_fol, "/", var_nm, "_summary_stats_", region, "_for_plotting.RDA"))
-  }
-  
-  regions <- c("eez", "rmpa")
-  walk(regions, summarise_vocc)
+    
+    regions <- c("eez", "rmpa")
+    walk(regions, summarise_vocc)
   
   
+  
+  
+
   
 # Compute area of each region that are classified as refugia -------------------
   
-  per <- 0.3  
   
   eez_stack <- readRDS(paste0(layer_fol, "/", var_nm, "_eez_stack.RDA"))
   mpa_stack <- readRDS(paste0(layer_fol, "/", var_nm, "_mpa_stack.RDA"))
   mpaoutside_stack <- readRDS(paste0(layer_fol, "/", var_nm, "_outsidempa_stack.RDA"))
-  
-  brks_eez <- readRDS(paste0(layer_fol, "/", var_nm, "_eez_breaks.RDA"))
-  brks_mpa <- readRDS(paste0(layer_fol, "/", var_nm, "_mpa_breaks.RDA"))
-  brks_mpaoutside <- readRDS(paste0(layer_fol, "/", var_nm, "_outsidempa_breaks.RDA"))
   
   brksREF_eez <- readRDS(paste0(layer_fol, "/", var_nm, "_eez_refugia_breaks_", per*100, "per.RDA")) %>% 
     unlist() %>% as.data.frame(.) %>% .[2, ]
@@ -120,18 +119,21 @@
   
   
   compute_refugia_proportions <- function(layer, threshold, region_area, region) {
-    binary_layer <- layer >= threshold
-    
-    cell_sizes <- raster::area(binary_layer, na.rm = TRUE, weights = FALSE) 
-    refugia_area <- sum(raster::getValues(cell_sizes)[raster::getValues(binary_layer) == 0], na.rm = TRUE)
+    binary_layer <- layer <= threshold
+
+    cell_sizes <- terra::cellSize(rast(layer), unit = "km")
+    refugia_area <- sum(terra::values(cell_sizes)[terra::values(binary_layer) == TRUE], na.rm = TRUE)
+
+    # cell_sizes <- raster::area(binary_layer, na.rm = TRUE, weights = FALSE)
+    # refugia_area <- sum(raster::getValues(cell_sizes)[raster::getValues(binary_layer) == 0], na.rm = TRUE)
     proportion_refugia <- refugia_area / region_area * 100
-    
+
     layer_name <- names(layer)
     variable <- strsplit(layer_name, "_")[[1]][1]
     ssp <- strsplit(layer_name, "_")[[1]][4]
     term <- strsplit(layer_name, "_")[[1]][7]
     region <- region
-    
+
     tibble(
       variable = variable,
       region = region,
@@ -140,16 +142,53 @@
       total_area = region_area,
       refugia_area = refugia_area,
       proportion_refugia = proportion_refugia
-    ) %>% 
+    ) %>%
       filter(term != "recent-term.RDS")
   }
   
+  
+  compute_refugia_proportions <- function(layer, threshold, region) {
+    
+    ## Calculate the total area (km2) of the coverage
+    total_cell_size <- terra::cellSize(rast(layer[[1]][[1]]), unit = "km")
+    total_area <- sum(values(total_cell_size)[!is.na(values(rast(layer[[1]][[1]])))])
+    
+    rr <- layer <= threshold
+    rrr <- rast(rr) + 0  # Convert to 1s/0s SpatRaster
+    rrr[rrr == 0] <- NA  # Make non-refugia areas NA
+    
+    layer_results <- map_dfr(1:nlyr(rrr), function(i) {
+      layer_refugia <- rrr[[i]]
+      cell_size <- terra::cellSize(layer_refugia, unit = "km")
+      refugia_area <- sum(values(cell_size)[!is.na(values(layer_refugia))], na.rm = TRUE)
+      proportion_refugia <- refugia_area / total_area * 100
+      
+      # Extract layer-specific metadata
+      layer_name <- names(layer)[i]
+      variable <- strsplit(layer_name, "_")[[1]][1]
+      ssp <- strsplit(layer_name, "_")[[1]][4]  
+      term <- strsplit(layer_name, "_")[[1]][7]
+      
+      tibble(
+        variable = variable,
+        region = region,
+        ssp = ssp,
+        term = term,
+        total_area = total_area,
+        refugia_area = refugia_area,
+        proportion_refugia = proportion_refugia
+      ) %>% 
+        filter(term != "recent")
+    })
+    
+    return(layer_results %>% filter(term != "recent-term.RDS"))
+  }
 
   ## EEZ  -----
   
     all_dfs_eez <- future_map_dfr(eez_stack, function(stack) {
       map_dfr(1:nlayers(stack), function(i) {
-        compute_refugia_proportions(stack[[i]], brksREF_eez, area_eez, "EEZ")
+        compute_refugia_proportions(stack[[i]], brksREF_eez, "EEZ")
       })
     })
     write_rds(all_dfs_eez, paste0(plotdf_fol, "/", var_nm, "_proportion_of_eez_that_are_refugia.RDS"))
@@ -159,20 +198,20 @@
   
     all_dfs_mpas <- future_map_dfr(mpa_stack, function(stack) {
       map_dfr(1:nlayers(stack), function(i) {
-        compute_refugia_proportions(stack[[i]], brksREF_mpa, area_mpa, "MPAs")
+        compute_refugia_proportions(stack[[i]], brksREF_mpa, "MPAs")
       })
     })
-    write_rds(all_dfs_mpas, paste0(plotdf_fol, "/", var_nm, "_proportion_of_MPAs_that_are_refugia.RDS"))
+    write_rds(all_dfs_mpas, paste0(plotdf_fol, "/", var_nm, "_proportion_of_MPAs_that_are_refugia_REVIEW.RDS"))
   
   
   ## Outside of MPAs -----
   
     all_dfs_outside <- future_map_dfr(mpaoutside_stack, function(stack) {
       map_dfr(1:nlayers(stack), function(i) {
-        compute_refugia_proportions(stack[[i]], brksREF_mpaoutside, area_outsidempa, "outsideMPAs")
+        compute_refugia_proportions(stack[[i]], brksREF_mpaoutside, "outsideMPAs")
       })
     })
-    write_rds(all_dfs_outside, paste0(plotdf_fol, "/", var_nm, "_proportion_of_outsideMPAs_that_are_refugia.RDS"))
+    write_rds(all_dfs_outside, paste0(plotdf_fol, "/", var_nm, "_proportion_of_outsideMPAs_that_are_refugia_REVIEW.RDS"))
   
 
   

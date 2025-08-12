@@ -20,6 +20,7 @@
 # Folders ----------------------------------------------------------------------
   
   infol <- make_folder(source_disk, "VoCC", var_nm, "threat_layers1")
+  # infol <- "/Volumes/AliceShield/clim_data/VoCC/pre-review/VoCCMag/threat_layers1"
   
   
 
