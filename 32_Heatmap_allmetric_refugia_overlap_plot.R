@@ -81,6 +81,8 @@
                                      breaks = seq(0, (length(files)), by = 1))) +
       tm_shape(aus_shp) +
       tm_fill(fill = "grey40") +
+      tm_shape(oceania_shp) +
+      tm_fill(fill = "grey40") +
       tm_shape(eez) +
       tm_borders(col = "black", lwd = 0.5) +
       tm_title(text = s) +
@@ -91,7 +93,7 @@
     ssp <- str_split_i(basename(files)[1], "_", 4) %>% unique()
     filename <- paste0(combined_plots_fol, "/metric-overlap_refugia_eez_",
                        ssp, "_", "1995-2100_",  per*100, 
-                       "per_NoRecentTerm_APR25.pdf")
+                       "per_NoRecentTerm_AUG25.pdf")
     
     tmap_save(p, filename, dpi = 2000, width = 12, height = 8, units = "in")
     return(p)
@@ -121,6 +123,8 @@
                                        breaks = seq(0, (length(files)), by = 1))) + 
         tm_shape(aus_shp) +
         tm_fill(fill = "grey40") +
+        tm_shape(oceania_shp) +
+        tm_fill(fill = "grey40") +
         tm_shape(eez) +
         tm_borders(col = "black", lwd = 0.5) +
         tm_title(text = s) +
@@ -136,7 +140,7 @@
         unique()
       
       filename <- paste0(combined_plots_fol, "/metric-overlap_refugia_mpas_",
-                         ssp, "_", "1995-2100_",  per*100, "per_NoRecentTerm_JAN25.pdf")
+                         ssp, "_", "1995-2100_",  per*100, "per_NoRecentTerm_AUG25.pdf")
       
       # Save with explicit dimensions to avoid margin errors
       tmap_save(p, filename, dpi = 2000, width = 12, height = 8, units = "in")
@@ -165,6 +169,8 @@
                                        breaks = seq(0, (length(files)), by = 1))) +
         tm_shape(aus_shp) +
         tm_fill(fill = "grey40") +
+        tm_shape(oceania_shp) +
+        tm_fill(fill = "grey40") +
         tm_shape(eez) +
         tm_borders(col = "black", lwd = 0.5) +
         tm_title(text = s) +
@@ -180,7 +186,7 @@
         unique()
       
       filename <- paste0(combined_plots_fol, "/metric-overlap_refugia_outsidempas_",
-                         ssp, "_", "1995-2100_",  per*100, "per_NoRecentTerm_JAN25.pdf")
+                         ssp, "_", "1995-2100_",  per*100, "per_NoRecentTerm_AUG25.pdf")
       
       # Save with explicit dimensions to avoid margin errors
       tmap_save(p, filename, dpi = 2000, width = 12, height = 8, units = "in")

@@ -16,8 +16,8 @@
   
   #**Change for each variable*
   # var_nm <- tos[1]
-  var_nm <- ph[1]
-  # var_nm <- o2[1]
+  # var_nm <- ph[1]
+  var_nm <- o2[1]
 
   
   
@@ -72,6 +72,8 @@
                   col.legend = tm_legend(title = paste0("Rate of change in ", var_nm[1], " ", var_nm[3], " per decade"))) +
         tm_shape(aus_shp) +
         tm_fill(fill = "grey45") +
+        tm_shape(oceania_shp) +
+        tm_fill(fill = "grey45") +
         tm_shape(eez) +
         tm_borders(col = "black", lwd = 0.5) +
         tm_facets(nrow = n_layers, 
@@ -81,7 +83,7 @@
                   inner.margins = c(0.02, 0.02, 0.02, 0.02))  # Adjust margins
       
       nm <- str_split_i(names(x)[1], "_", 4) %>%
-        paste0(metricplots_fol, "/", var_nm[1], "_ROC_METRICplot_", region_nm, "RdBu_", ., ".pdf") 
+        paste0(metricplots_fol, "/", var_nm[1], "_ROC_METRICplot_oceania_", region_nm, "RdBu_", ., ".pdf") 
       
       # Save with explicit dimensions - make it wider to accommodate legend
       tmap_save(p, nm, width = 14, height = 10, units = "in")
@@ -108,11 +110,11 @@
     
     
     if(var_nm[1] == "tos") {
-      e_pal <- c("#EA7A0B", "#EBB65C")  # In a positive direction (tos only)
-      m_pal <- c("#086788", "#A0DAE4")  # In a positive direction (tos only)
+      m_pal <- c("#EA7A0B", "#EBB65C")  # In a positive direction (tos only)
+      e_pal <- c("#086788", "#A0DAE4")  # In a positive direction (tos only)
     } else {
-      e_pal <- c("#EBB65C", "#EA7A0B") # In a negative direction (ph, o2)
-      m_pal <- c("#A0DAE4", "#086788") # In a negative direction (ph, o2)  
+      m_pal <- c("#EBB65C", "#EA7A0B") # In a negative direction (ph, o2)
+      e_pal <- c("#A0DAE4", "#086788") # In a negative direction (ph, o2)  
     }
     e_pal
     m_pal
@@ -134,6 +136,8 @@
                   col.legend = tm_legend(title = paste0("Rate of change in ", var_nm[1], " ", var_nm[3], " per decade"))) +
         tm_shape(aus_shp) +
         tm_fill(fill = "grey60") +
+        tm_shape(oceania_shp) +
+        tm_fill(fill = "grey60") +
         tm_shape(eez) +
         tm_borders(col = "black", lwd = 0.5) +
         tm_facets(nrow = n_layers_eez, sync = TRUE) +
@@ -148,6 +152,8 @@
                   col.legend = tm_legend(title = paste0("Rate of change in ", var_nm[1], " ", var_nm[3], " per decade"))) +
         tm_shape(aus_shp) +
         tm_fill(fill = "grey60") +
+        tm_shape(oceania_shp) +
+        tm_fill(fill = "grey60") +
         tm_shape(eez) +
         tm_borders(col = "black", lwd = 0.5) +
         tm_facets(nrow = n_layers_mpa, sync = TRUE) +
@@ -156,7 +162,7 @@
       
       arranged <- tmap_arrange(p_mpa, ncol = 1, widths = 0.4)
       nm <- str_split_i(names(m)[1], "_", 4) %>%
-        paste0(refplots_fol, "/", var_nm[1], "_ROC_REFplot_dif-mpaeez-quadcolour_", ., "_", per*100, "per",".pdf")
+        paste0(refplots_fol, "/", var_nm[1], "_ROC_REFplot_dif-mpaeez-quadcolour_oceania_", ., "_", per*100, "per",".pdf")
       
       # Save with explicit dimensions
       tmap_save(arranged, nm, width = 14, height = 10, units = "in")

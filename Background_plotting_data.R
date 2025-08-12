@@ -15,7 +15,8 @@
   
   aus <- readRDS(paste0(disk, "/mask_landsea.RDS"))
   aus_shp <- readRDS(paste0(disk, "/aus_shapefile.RDS"))
-  oceaniaAsia <- readRDS(paste0(disk, "/oceaniaAsia_shapefile.RDS"))
+  oceania_shp <- readRDS(paste0(disk, "/stanford_oceania_shapefile.RDS"))
+  # oceaniaAsia <- readRDS(paste0(disk, "/oceaniaAsia_shapefile.RDS"))
   eez <- readRDS(paste0(disk, "/EEZ_shapefile.RDS"))
   # MPA_shp <- readRDS(paste0(disk, "/mpas_numbered_shapefile.RDS"))
   MPA_shp <- readRDS(paste0(disk, "/joined_shps_shapefile.RDS"))

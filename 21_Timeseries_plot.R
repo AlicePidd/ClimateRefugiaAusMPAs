@@ -15,8 +15,8 @@
   
   #**Change for each variable*
   # var_nm <- tos
-  # var_nm <- ph
-  var_nm <- o2
+  var_nm <- ph
+  # var_nm <- o2
 
   
   
@@ -47,7 +47,8 @@
     y_limits <- case_when( 
       var_nm[1] == "tos" ~ c(-0.7, 5.2), # Dynamic range for "tos"
       var_nm[1] == "o2" ~ c(-0.02, 0.003), # Fixed range for "o2"
-      var_nm[1] == "ph" ~ c(-0.2, max(dat$upr_esm)))  # Dynamic range for "ph"
+      var_nm[1] == "ph" ~ c(-0.5, max(dat$upr_esm)))  # Dynamic range for "ph"
+
 
     p <- ggplot(datdf, aes(x = Year, y = fit_esm, color = SSP)) +
       geom_rect(xmin = 1995, xmax = 2014, ymin = -Inf, ymax = Inf, 
@@ -98,7 +99,7 @@
            width = 10, height = 4.5, dpi = 3000, paper = "a4r")
   }
   
-  dfs <- dir(infol, full.names = TRUE)
+  dfs <- dir(infol, full.names = TRUE, pattern = "plottingfit")
   walk(dfs, plot_timeseries)
   
   

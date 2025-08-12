@@ -60,7 +60,8 @@
                                      breaks = brks,
                                      midpoint = 0),
                 col.legend = tm_legend(title = paste0("Rate of change in ", var_nm[1], " ", var_nm[3], " per decade"))) +
-      tm_shape(aus_shp) +
+      # tm_shape(aus_shp) +
+      tm_shape(oceania_shp) +
       tm_fill(fill = "grey45") +
       tm_shape(eez) +
       tm_borders(col = "black", lwd = 0.5) +
@@ -74,7 +75,7 @@
                 legend.outside.size = 0.15)
     
     nm <- str_split_i(names(x)[1], "_", 4) %>%
-      paste0(metricplots_fol, "/", var_nm[1], "_METRICplot_", region_nm, "RdBu_", ., ".pdf") 
+      paste0(metricplots_fol, "/", var_nm[1], "_METRICplot_oceania_", region_nm, "RdBu_", ., ".pdf") 
     
     # Save with explicit dimensions and remove tmap_arrange
     tmap_save(p, nm, width = 14, height = 10, units = "in")
@@ -107,7 +108,8 @@
                                      labels = c(paste0("Refugia (≤ ", per*100, "% change)"),
                                                 paste0("Non-refugia (> ", per*100, "% change)"))),
                 col.legend = tm_legend(title = "Classification")) +
-      tm_shape(aus_shp) +
+      # tm_shape(aus_shp) +
+      tm_shape(oceania_shp) +
       tm_fill(fill = "grey60") +
       tm_shape(eez) +
       tm_borders(col = "black", lwd = 0.5) +
@@ -127,7 +129,8 @@
                                      labels = c(paste0("Refugia (≤ ", per*100, "% change)"),
                                                 paste0("Non-refugia (> ", per*100, "% change)"))),
                 col.legend = tm_legend(title = "Classification")) +
-      tm_shape(aus_shp) +
+      # tm_shape(aus_shp) +
+      tm_shape(oceania_shp) +
       tm_fill(fill = "grey60") +
       tm_shape(eez) +
       tm_borders(col = "black", lwd = 0.5) +
@@ -141,7 +144,7 @@
                 legend.outside.size = 0.15)
     
     nm <- str_split_i(names(m)[1], "_", 4) %>%
-      paste0(refplots_fol, "/", var_nm[1], "_REFplot_dif-mpaeez-quadcolour_", ., "_", per*100, "per",".pdf")
+      paste0(refplots_fol, "/", var_nm[1], "_REFplot_dif-mpaeez-quadcolour_oceania_", ., "_", per*100, "per",".pdf")
     
     # Save with explicit dimensions and remove tmap_arrange
     tmap_save(p_mpa, nm, width = 14, height = 10, units = "in")

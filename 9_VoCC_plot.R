@@ -63,6 +63,8 @@
                 col.legend = tm_legend(title = paste0("Rate of change in ", var_nm[1], " ", var_nm[3], " per decade"))) +
       tm_shape(aus_shp) +
       tm_fill(fill = "grey45") +
+      tm_shape(oceania_shp) +
+      tm_fill(fill = "grey45") +
       tm_shape(eez) +
       tm_borders(col = "black", lwd = 0.5) +
       tm_facets(nrow = n_layers, sync = TRUE) +
@@ -109,7 +111,9 @@
                                                 paste0("Non-refugia (> ", per*100, "% change)"))),
                 col.legend = tm_legend(title = "Classification")) +
       tm_shape(aus_shp) +
-      tm_fill(fill = "grey60") +
+      tm_fill(fill = "grey45") +
+      tm_shape(oceania_shp) +
+      tm_fill(fill = "grey45") +
       tm_shape(eez) +
       tm_borders(col = "black", lwd = 0.5) +
       tm_facets(nrow = n_layers_eez, sync = TRUE) +
@@ -129,7 +133,9 @@
                                                 paste0("Non-refugia (> ", per*100, "% change)"))),
                 col.legend = tm_legend(title = "Classification")) +
       tm_shape(aus_shp) +
-      tm_fill(fill = "grey60") +
+      tm_fill(fill = "grey45") +
+      tm_shape(oceania_shp) +
+      tm_fill(fill = "grey45") +
       tm_shape(eez) +
       tm_borders(col = "black", lwd = 0.5) +
       tm_facets(nrow = n_layers_mpa, sync = TRUE) +

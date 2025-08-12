@@ -674,6 +674,7 @@ make_folder <- function(d, m, v, fol_dir_name) {
 
 	get_shps <- function(shp_dir){
 	  shp <- st_read(shp_dir) %>% 
+	    st_make_valid() %>% 
 	    sf::st_transform(4326) %>% 
 	    sf::st_crop(ext(base_r))
 	}
