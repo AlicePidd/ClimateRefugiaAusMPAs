@@ -20,9 +20,9 @@
   
 # Folders and background data --------------------------------------------------
   
-  infol <- make_folder(source_disk, "VoCC", var_nm[1], "threat_layers1") # Raster stacks per SSP
-  metricplots_fol <- make_folder(dest_disk, "VoCC", var_nm[1], "plots_metric1")
-  refplots_fol <- make_folder(dest_disk, "VoCC", var_nm[1], "plots_refugia1") # Where refugia plots will go
+  infol <- make_folder(source_disk, "VoCC", var_nm[1], "threat_layers") # Raster stacks per SSP
+  metricplots_fol <- make_folder(dest_disk, "VoCC", var_nm[1], "plots_metric")
+  refplots_fol <- make_folder(dest_disk, "VoCC", var_nm[1], "plots_refugia") # Where refugia plots will go
   
   
   

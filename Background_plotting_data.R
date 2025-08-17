@@ -20,7 +20,7 @@
   eez <- readRDS(paste0(disk, "/EEZ_shapefile.RDS"))
   # MPA_shp <- readRDS(paste0(disk, "/mpas_numbered_shapefile.RDS"))
   MPA_shp <- readRDS(paste0(disk, "/joined_shps_shapefile.RDS"))
-  outsideMPA_shp <- readRDS(paste0(disk, "/outsideMPAs_shapefile.RDS"))
+  outsideMPA_shp <- readRDS(paste0(disk, "/outsideMPAs_shapefile.rds"))
   # IUCN_V_VI_shps <- readRDS("/Volumes/AliceShield/clim_data/masks/landsea_masks/IUCN-category_V-VI_shapefile.RDS")
   # eez_mask <- readRDS(paste0(disk, "/mask_EEZ_NAs.RDS"))
 

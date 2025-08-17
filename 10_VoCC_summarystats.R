@@ -21,8 +21,8 @@
 # Folders ----------------------------------------------------------------------
   
   infol <- make_folder(source_disk, "VoCC", var_nm, "calc_cropped") 
-  layer_fol <- make_folder(source_disk, "VoCC", var_nm, "threat_layers1")
-  plotdf_fol <- make_folder(source_disk, "VoCC", var_nm, "plotdfs1")
+  layer_fol <- make_folder(source_disk, "VoCC", var_nm, "threat_layers")
+  plotdf_fol <- make_folder(source_disk, "VoCC", var_nm, "plotdfs")
   per <- 0.3  
   
   
@@ -215,34 +215,34 @@
   
 
   
-# # Proportion of area over 150km.decade per term --------------------------------
-#   
-#   ## Whole EEZ -----
-#   
-#   prop_over150_eez <- function(f) {
-#     d <- readRDS(f)
-#     
-#     file_info <- strsplit(basename(f), "_")[[1]]
-#     term <- str_split_i(basename(f), "_", 3)
-#     ssp <- str_split_i(basename(f), "_", 2)
-#     
-#     # Calc proportion of area over 150 km decade^-1
-#     proportion_exceeding <- sum(d$voccMag > 150) / nrow(d)
-#     
-#     tibble(
-#       File = basename(f),
-#       Scenario = ssp,
-#       Term = term,
-#       ProportionAreaExceeding150kmdecade = proportion_exceeding
-#     )
-#   }
-#   
-#   files <- dir(plotdf_fol, full.names = TRUE, pattern = "term_eez") 
-#   files
-# 
-#   prop_results <- map_dfr(files, prop_over150_eez)  
-#   prop_results
-#   saveRDS(prop_results, paste0(plotdf_fol, "/VoCCMag_proportion_area_over150kmdecade_eez.RDA"))
+# Proportion of area over 150km.decade per term --------------------------------
+
+  ## Whole EEZ -----
+
+  prop_over150_eez <- function(f) {
+    d <- readRDS(f)
+
+    file_info <- strsplit(basename(f), "_")[[1]]
+    term <- str_split_i(basename(f), "_", 3)
+    ssp <- str_split_i(basename(f), "_", 2)
+
+    # Calc proportion of area over 150 km decade^-1
+    proportion_exceeding <- sum(d$voccMag > 150) / nrow(d)
+
+    tibble(
+      File = basename(f),
+      Scenario = ssp,
+      Term = term,
+      ProportionAreaExceeding150kmdecade = proportion_exceeding
+    )
+  }
+
+  files <- dir(plotdf_fol, full.names = TRUE, pattern = "term_eez")
+  files
+
+  prop_results <- map_dfr(files, prop_over150_eez)
+  prop_results
+  saveRDS(prop_results, paste0(plotdf_fol, "/VoCCMag_proportion_area_over150kmdecade_eez.RDA"))
 #   
 #   
 #   ## For MPAs -----

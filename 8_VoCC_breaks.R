@@ -19,9 +19,8 @@
   
 # Folders ----------------------------------------------------------------------
   
-  infol <- make_folder(source_disk, "VoCC", var_nm, "threat_layers1")
-  # infol <- "/Volumes/AliceShield/clim_data/VoCC/pre-review/VoCCMag/threat_layers1"
-  
+  infol <- make_folder(source_disk, "VoCC", var_nm, "threat_layers")
+
   
 
 # Create breaks for each threat ------------------------------------------------
@@ -68,14 +67,14 @@
   # Classifies the threat layer data as either "refugial" or "non-refugial" based on the percentile set as the break/threshold - here, the first 30% (0.3) of change of the recent-term data
     
   get_recentterm_brks <- function(df, ref_per) { # Split the df at the specified refugia percentage
-    dflist <- as.list(df)
+    dflist <- as.list(recent_dfeez)
     
     brks <- map(dflist, ~ { 
       na.omit(.x) %>% 
         as.vector() %>% 
         unlist() %>% 
         unname() %>% 
-        quantile(., ref_per) %>% # Find what the value is at 30%
+        quantile(., 0.3) %>% # Find what the value is at 30%
         c(-Inf, ., Inf) # Put it between infinities
     })
     return(brks)

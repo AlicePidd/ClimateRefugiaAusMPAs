@@ -22,7 +22,7 @@
   
   infol <- make_folder(source_disk, "VoCC", var_nm, "calc") 
   crop_fol <- make_folder(source_disk, "VoCC", var_nm, "calc_cropped") 
-  outfol <- make_folder(source_disk, "VoCC", var_nm, "threat_layers1") # Raster stacks per SSP
+  outfol <- make_folder(source_disk, "VoCC", var_nm, "threat_layers") # Raster stacks per SSP
   
   
   
@@ -35,7 +35,8 @@
     r <- crop(r, e1) * 10      #** Decadal **
     nm <- basename(f) %>% 
       str_replace(., "rg", "cropped") %>% 
-      str_replace(., "Operiod", "decadal")
+      str_replace(., "tos", "vocc") %>% 
+      str_replace(., "VoCC", "decadal")
     saveRDS(r, paste0(crop_fol, "/", nm))
   }
   walk(files, crop_to_ext)
