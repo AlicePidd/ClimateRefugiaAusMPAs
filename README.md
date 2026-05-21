@@ -21,9 +21,7 @@ This repo contains R code underpinning the analyses for our paper, submitted to 
 ```         
 ClimateRefugiaAusMPAs
 ├── figures_tables      <--- .pdf files of figures and tables in the main text   
-├── figure_scripts      <--- code to generate figures in main text (outputs in \figures)  
-├── functions           <--- functions used in /scripts 
-├── scripts             <--- code used in the analysis 
+├── masks               <--- .RDS masks for computation and spatial plotting  
 └── supplementary       <--- supplementary materials for the manuscript 
 ```
 
